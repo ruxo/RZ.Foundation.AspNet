@@ -15,6 +15,7 @@ function build {
 Push-Location ./src
 
 build .\RZ.AspNet.Bootstrapper
+build .\RZ.AspNet.Api
 build .\RZ.Foundation.Blazor
 build .\RZ.Foundation.Blazor.MudBlazor
 
