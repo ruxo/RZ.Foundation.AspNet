@@ -58,6 +58,11 @@ public class ViewFinder : IViewFinder
     static Type? GetType(Type modelType, string typeName) {
         // get view type from the same namespace of the model
         var viewTypeFullName = $"{modelType.Namespace}.{typeName}";
-        return modelType.Assembly.GetType(viewTypeFullName);
+        return modelType.Assembly.GetType(viewTypeFullName)
+            ?? (from asm in AppDomain.CurrentDomain.GetAssemblies()
+                where asm != modelType.Assembly && asm.FullName?.StartsWith("System") == false
+                let viewType = asm.GetType(viewTypeFullName)
+                where viewType is not null
+                select viewType).FirstOrDefault();
     }
 }
