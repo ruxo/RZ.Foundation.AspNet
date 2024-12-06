@@ -7,6 +7,8 @@ namespace RZ.Foundation.Blazor.MVVM;
 [PublicAPI]
 public abstract class ViewModel : ReactiveObject
 {
+    public Guid Id { get; } = Guid.CreateVersion7();
+
     public virtual void ViewOnScreen() {}
     public virtual void ViewOffScreen() {}
 }

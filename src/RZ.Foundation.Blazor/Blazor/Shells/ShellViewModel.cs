@@ -24,7 +24,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     const int MaxNotifications = 20;
 
     NavBarMode navBarMode;
-    bool isDarkMode;
 
     public ShellViewModel(ILogger<ShellViewModel> logger, TimeProvider clock,
                           IViewModelFactory viewFactory, ShellOptions options) {
@@ -32,6 +31,8 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         this.clock = clock;
         this.viewFactory = viewFactory;
         this.options = options;
+
+        logger.LogDebug("Initializing ShellViewModel {Id}", Id);
 
         navBarMode = options.InitialNavBar;
         isDrawerVisible = this.WhenAnyValue(x => x.NavBarMode,
@@ -47,10 +48,12 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         NavItems = new(options.Navigation);
     }
 
+    public string BasePath => options.BasePath;
+
     public bool IsDarkMode
     {
-        get => isDarkMode;
-        set => this.RaiseAndSetIfChanged(ref isDarkMode, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     #region Nav Bar
@@ -82,7 +85,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
 
     public AppMode AppMode => content.TryPeek(out var v)? v.AppMode : AppMode.Page.Default;
     public ViewModel Content => content.TryPeek(out var v)? v.Content : BlankContentViewModel.Instance;
-    public ViewMode ViewMode => content.TryPeek(out var v)? v.ViewMode : ViewMode.Single.Instance;
     public int StackCount => content.Count;
 
     public ObservableCollection<Navigation> NavItems { get; }
@@ -91,25 +93,11 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
 
     public ReactiveCommand<RUnit, RUnit> ToggleDrawer => ReactiveCommand.Create(() => { IsDrawerOpen = !IsDrawerOpen; });
 
-    #region Dual mode
-
-    public bool TrySetRightPanel(ViewModel? viewModel) {
-        var state = content.Peek();
-        if (state.ViewMode is not ViewMode.Dual)
-            return false;
-
-        this.RaisePropertyChanging(nameof(Content));
-        this.RaisePropertyChanging(nameof(ViewMode));
-        content.Pop();
-        content.Push(state with {
-            ViewMode = new ViewMode.Dual { DetailPanel = viewModel }
-        });
-        this.RaisePropertyChanged(nameof(ViewMode));
-        this.RaisePropertyChanged(nameof(Content));
-        return true;
+    public string? GetShellPath(string navigationPath) {
+        var truePath = navigationPath.StartsWith(BasePath) ? navigationPath[BasePath.Length..] : null;
+        if (truePath?.Length == 0) truePath = "/";
+        return truePath is not null && truePath.StartsWith('/')? truePath : null;
     }
-
-    #endregion
 
     public Unit CloseCurrentView()
         => ChangingStack(() => content.Pop());
@@ -128,10 +116,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         var current = content.Peek();
         var appMode = appModeGetter(current.AppMode);
 
-        content.Push(current with {
-            AppMode = appMode,
-            Content = viewModel ?? current.Content
-        });
+        content.Push(new ViewState(AppMode: appMode, Content: viewModel ?? current.Content));
     });
 
     public Unit Push(ViewModel viewModel)
@@ -149,10 +134,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         if (appMode is not null)
             this.RaisePropertyChanging(nameof(AppMode));
         var current = content.Pop();
-        content.Push(current with {
-            Content = replacement,
-            AppMode = appMode ?? current.AppMode
-        });
+        content.Push(new ViewState(Content: replacement, AppMode: appMode ?? current.AppMode));
         if (appMode is not null)
             this.RaisePropertyChanged(nameof(AppMode));
         this.RaisePropertyChanged(nameof(Content));
@@ -166,7 +148,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
             content.Peek().Content.ViewOffScreen();
 
         this.RaisePropertyChanging(nameof(Content));
-        this.RaisePropertyChanging(nameof(ViewMode));
         this.RaisePropertyChanging(nameof(AppMode));
         this.RaisePropertyChanging(nameof(StackCount));
         this.RaisePropertyChanging(nameof(IsDrawerVisible));
@@ -174,7 +155,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         this.RaisePropertyChanged(nameof(IsDrawerVisible));
         this.RaisePropertyChanged(nameof(StackCount));
         this.RaisePropertyChanged(nameof(AppMode));
-        this.RaisePropertyChanged(nameof(ViewMode));
         this.RaisePropertyChanged(nameof(Content));
 
         content.Peek().Content.ViewOnScreen();
@@ -202,31 +182,18 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
             content.Clear();
             var view = navItem.View.Invoke(viewFactory);
 
-            var vm = navItem.ViewMode switch {
-                ViewModeType.Single => ViewMode.Single.Instance,
-                ViewModeType.Dual   => ViewMode.Dual.Default,
-                _                   => current?.ViewMode ?? ViewMode.Single.Instance
-            };
-
             logger.LogDebug("Push view for {Path}", urlPath);
-            content.Push(new(AppMode.Page.Default, view, vm));
+            content.Push(new(AppMode.Page.Default, view));
         });
         return true;
     }
-}
 
-public sealed record ViewState(AppMode AppMode, ViewModel Content, ViewMode ViewMode);
-
-public abstract record ViewMode
-{
-    public sealed record Single : ViewMode
-    {
-        public static readonly ViewMode Instance = new Single();
-    }
-
-    public sealed record Dual : ViewMode
-    {
-        public static readonly ViewMode Default = new Dual();
-        public ViewModel? DetailPanel { get; init; }
+    public void NavigateToNotFound() {
+        ChangingStack(() => {
+            content.Clear();
+            content.Push(new(AppMode.Page.Default, BlankContentViewModel.Instance));
+        });
     }
 }
+
+public sealed record ViewState(AppMode AppMode, ViewModel Content);

@@ -1,4 +1,9 @@
 ﻿@page "/"
-@rendermode InteractiveServer
 
-<ShellView />
+@code {
+
+    public Index(NavigationManager navManager) {
+        navManager.NavigateTo("/app");
+    }
+
+}

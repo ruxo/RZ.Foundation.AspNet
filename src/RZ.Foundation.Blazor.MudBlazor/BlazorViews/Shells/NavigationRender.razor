@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@switch (Item){
+    case Navigation.CommonItem item:
+        if (item.Policy is null){
+            <RzNavItem Icon="@item.Icon" Href="@item.NavPath" Match="ToMatchType(item.IsPartialMatch)"
+                       Direct="@(item is Navigation.DirectRoute)">@item.Title</RzNavItem>
+        }
+        else{
+            <AuthorizeView Policy="@item.Policy">
+                <RzNavItem Icon="@item.Icon" Href="@item.NavPath" Match="ToMatchType(item.IsPartialMatch)"
+                           Direct="@(item is Navigation.DirectRoute)">@item.Title</RzNavItem>
+            </AuthorizeView>
+        }
+        break;
+
+    case Navigation.Group group:
+        if (group.Policy is null){
+            <RzNavGroup Icon="@group.Icon" Title="@group.Title">
+                @foreach (var item in group.Items){
+                    <NavigationRender Item="@item"/>
+                }
+            </RzNavGroup>
+        }
+        break;
+
+    case Navigation.Divider:
+        <MudDivider />
+        break;
+
+    default:
+        <MudText Typo="Typo.h6">Unknown navigation item</MudText>
+        break;
+}
+
+@code {
+    [Parameter, EditorRequired] public required Navigation Item { get; set; }
+
+    static NavLinkMatch ToMatchType(bool isPartial)
+        => isPartial ? NavLinkMatch.Prefix : NavLinkMatch.All;
+
+}

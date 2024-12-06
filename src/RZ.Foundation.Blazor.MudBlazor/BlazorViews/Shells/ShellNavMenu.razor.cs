@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Microsoft.Extensions.Logging;
 using MudBlazor;
 using ReactiveUI;
 using RZ.Foundation.Blazor.MVVM;
@@ -7,14 +8,22 @@ using RZ.Foundation.Blazor.Shells;
 
 namespace RZ.Foundation.BlazorViews.Shells;
 
-public class ShellNavMenuViewModel(ShellViewModel shell) : ActivatableViewModel
+public class ShellNavMenuViewModel : ViewModel, IDisposable
 {
-    ObservableAsPropertyHelper<DrawerVariant> variant = default!;
-    ObservableAsPropertyHelper<bool> showOnHover = default!;
-    ObservableAsPropertyHelper<bool> iconOnly = default!;
-    ObservableAsPropertyHelper<bool> isDrawerVisible = default!;
+    readonly ObservableAsPropertyHelper<DrawerVariant> variant;
+    readonly ObservableAsPropertyHelper<bool> showOnHover;
+    readonly ObservableAsPropertyHelper<bool> iconOnly;
+    readonly ObservableAsPropertyHelper<bool> isDrawerVisible;
 
-    protected override void OnActivated(CompositeDisposable disposables) {
+    readonly ILogger<ShellNavMenuViewModel> logger;
+    readonly ShellViewModel shell;
+    readonly CompositeDisposable disposables = new();
+
+    public ShellNavMenuViewModel(ILogger<ShellNavMenuViewModel> logger, ShellViewModel shell) {
+        this.logger = logger;
+        this.shell = shell;
+        logger.LogDebug("Creating ShellNavMenuViewModel {Id} with Shell ID {ShellId}", Id, shell.Id);
+
         isDrawerVisible = shell.WhenAnyValue(x => x.IsDrawerVisible)
                               .ToProperty(this, x => x.IsDrawerVisible)
                               .DisposeWith(disposables);
@@ -30,6 +39,11 @@ public class ShellNavMenuViewModel(ShellViewModel shell) : ActivatableViewModel
                                       (useMiniDrawer, isDrawerOpen) => useMiniDrawer && !isDrawerOpen)
                         .ToProperty(this, x => x.IconOnly)
                         .DisposeWith(disposables);
+    }
+
+    public void Dispose() {
+        logger.LogDebug("Disposing ShellNavMenuViewModel {Id}", Id);
+        disposables.Dispose();
     }
 
     public DrawerVariant Variant => variant.Value;
@@ -48,6 +62,4 @@ public class ShellNavMenuViewModel(ShellViewModel shell) : ActivatableViewModel
     }
 
     public bool IsDrawerVisible => isDrawerVisible.Value;
-
-    public IEnumerable<Navigation> NavItems => shell.NavItems;
 }

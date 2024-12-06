@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
        .AddMudServices()
-       .AddRzBlazorSettings(_ => new ShellOptions {
+       .AddRzBlazorSettings(_ => new ShellOptions("/app") {
             Navigation = [
                 new Navigation.Item("Home", View.Model<WelcomeViewModel>(), "/", Icons.Material.Filled.Home),
                 new Navigation.Item("Shell", View.Model<ContentViewModel>(), "/shell", Icons.Material.Filled.ShieldMoon),

@@ -1,0 +1,15 @@
+﻿<MudNavGroup Icon="@Icon" Title="@(IconOnly? null : Title)">
+    @if (ChildContent is not null){
+        @ChildContent
+    }
+</MudNavGroup>
+
+@code {
+
+    [Parameter, EditorRequired] public required string Title { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [CascadingParameter(Name="IconOnly")] bool IconOnly { get; set; }
+
+}

@@ -11,8 +11,8 @@
             <SectionOutlet SectionName="drawer-title"/>
         }
         <MudNavMenu>
-            @foreach (var nav in ViewModel!.NavItems){
-                <NavItemView Item="nav" IconOnly="ViewModel!.IconOnly"/>
+            @if (ChildContent is not null){
+                @ChildContent
             }
         </MudNavMenu>
         @if (ViewModel!.IsDrawerOpen){
@@ -25,6 +25,9 @@
 }
 
 @code {
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
     public ShellNavMenu() {
         this.WhenActivated(_ => { /* for activable view */ });
     }

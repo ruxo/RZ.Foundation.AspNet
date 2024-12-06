@@ -1,0 +1,71 @@
+﻿@using System.Reactive.Disposables
+@using RZ.Foundation.BlazorViews.Shells
+@using Microsoft.AspNetCore.Components.Sections
+@using Microsoft.Extensions.Logging
+@using ReactiveUI
+@using RZ.Foundation.Blazor.Helpers
+@using RZ.Foundation.Blazor.MVVM
+@inherits ReactiveComponentBase<ShellViewModel>
+
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@inject ILogger<Shell> Logger
+
+<MudThemeProvider Theme="Theme" @bind-IsDarkMode="ViewModel!.IsDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider BackdropClick="false" />
+<MudSnackbarProvider />
+
+<MudLayout Class="screen-height">
+    @if (AppBar is null){
+        <ShellAppBar ViewModel="ViewModel"/>
+    }
+    else{
+        @AppBar
+    }
+
+    <CascadingValue Value="menu.IconOnly" Name="IconOnly">
+        @if (NavMenu is null){
+            <ShellNavMenu ViewModel="menu">
+                @foreach (var nav in ViewModel!.NavItems){
+                    <NavigationRender Item="@nav"/>
+                }
+            </ShellNavMenu>
+        }
+        else{
+            @NavMenu
+        }
+    </CascadingValue>
+
+    <MudMainContent Class="max-height">
+        <SectionOutlet SectionName="content-top"/>
+
+        <MudContainer MaxWidth="@(MaxWidth ?? MudBlazor.MaxWidth.False)" Class="max-height">
+            <ShellView />
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+
+    [Parameter] public MudTheme? Theme { get; set; }
+    [Parameter] public MaxWidth? MaxWidth { get; set; }
+
+    [Parameter] public RenderFragment? AppBar { get; set; }
+    [Parameter] public RenderFragment? NavMenu { get; set; }
+
+    readonly ShellNavMenuViewModel menu;
+
+    public Shell(IViewModelFactory vmFactory, ShellViewModel shell) {
+        ViewModel = shell;
+        menu = vmFactory.Create<ShellNavMenuViewModel>();
+
+        this.WhenActivated(disposables => {
+            ViewModel!.Notifications
+                      .Subscribe(m => Snackbar.Add(m.Message, m.Severity.ToMudSeverity()))
+                      .DisposeWith(disposables);
+            menu.DisposeWith(disposables);
+        });
+    }
+
+}

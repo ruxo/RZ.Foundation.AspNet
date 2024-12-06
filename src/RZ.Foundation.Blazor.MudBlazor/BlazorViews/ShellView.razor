@@ -1,51 +1,23 @@
-﻿@using System.Reactive.Disposables
-@using RZ.Foundation.BlazorViews.Shells
-@using Microsoft.AspNetCore.Components.Sections
-@using Microsoft.Extensions.Logging
-@using ReactiveUI
+﻿@using Microsoft.Extensions.Logging
 @using RZ.Foundation.Blazor.Helpers
-@inherits ReactiveInjectableComponentBase<ShellViewModel>
+@inherits ReactiveComponentBase<ShellViewModel>
 
-@inject NavigationManager NavManager
-@inject ShellViewModel Shell
-@inject ISnackbar Snackbar
-@inject ILogger<ShellView> Logger
-
-<MudThemeProvider Theme="Theme" @bind-IsDarkMode="ViewModel!.IsDarkMode" />
-<MudPopoverProvider />
-<MudDialogProvider BackdropClick="false" />
-<MudSnackbarProvider />
-
-<MudLayout Class="screen-height">
-    <ShellAppBar ViewModel="ViewModel" />
-    <ShellNavMenu ViewModel="menuVm" />
-    <MudMainContent Class="max-height">
-        <SectionOutlet SectionName="content-top"/>
-
-        <MudContainer MaxWidth="@(MaxWidth ?? MudBlazor.MaxWidth.False)" Class="max-height">
-            <ShellViewContent ViewModel="ViewModel!"/>
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+<ViewFrom Model="ViewModel!.Content"/>
 
 @code {
 
-    [Parameter] public MudTheme? Theme { get; set; }
-    [Parameter] public MaxWidth? MaxWidth { get; set; }
+    public ShellView(ILogger<ShellView> logger, NavigationManager navManager, ShellViewModel shell) {
+        ViewModel = shell;
+        var toPath = navManager.Path();
+        var shellPath = shell.GetShellPath(toPath);
 
-    ShellNavMenuViewModel menuVm = default!;
-
-    public ShellView() {
-        this.WhenActivated(disposables => {
-            Shell.Notifications
-                 .Subscribe(m => Snackbar.Add(m.Message, m.Severity.ToMudSeverity()))
-                 .DisposeWith(disposables);
-            menuVm = new(Shell);
-            var toPath = NavManager.Path();
-
-            Logger.LogDebug("Navigating to {ToPath}", toPath);
-            Shell.NavigateTo(toPath);
-        });
+        logger.LogDebug("Navigating to {ToPath} ==> {ShellPath}", toPath, shellPath);
+        if (shellPath is not null)
+            ViewModel!.NavigateTo(shellPath);
+        else{
+            logger.LogWarning("Path {ToPath} not found", toPath);
+            ViewModel!.NavigateToNotFound();
+        }
     }
 
 }
