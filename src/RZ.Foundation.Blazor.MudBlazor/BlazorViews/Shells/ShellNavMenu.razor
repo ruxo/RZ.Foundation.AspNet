@@ -5,7 +5,8 @@
 @inject NavigationManager NavManager
 
 @if (ViewModel!.IsDrawerVisible){
-    <MudDrawer Elevation="0" Variant="@ViewModel!.Variant" OpenMiniOnHover="ViewModel!.ShowOnHover"
+    <MudDrawer Elevation="2" Variant="@ViewModel!.Variant" OpenMiniOnHover="ViewModel!.ShowOnHover"
+               ClipMode="DrawerClipMode.Always"
                @bind-Open="ViewModel!.IsDrawerOpen">
         @if (ViewModel!.IsDrawerOpen){
             <SectionOutlet SectionName="drawer-title"/>
