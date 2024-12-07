@@ -28,7 +28,7 @@ public class ShellNavMenuViewModel : ViewModel, IDisposable
                               .ToProperty(this, x => x.IsDrawerVisible)
                               .DisposeWith(disposables);
         variant = shell.WhenAnyValue(x => x.UseMiniDrawer)
-                       .Select(x => x ? DrawerVariant.Mini : DrawerVariant.Responsive)
+                       .Select(x => x ? DrawerVariant.Mini : DrawerVariant.Temporary)
                        .ToProperty(this, x => x.Variant)
                        .DisposeWith(disposables);
         showOnHover = shell.WhenAnyValue(x => x.UseMiniDrawer)

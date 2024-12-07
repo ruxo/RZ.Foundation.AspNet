@@ -1,9 +1,11 @@
+using JetBrains.Annotations;
 using RZ.Foundation.Blazor.MVVM;
 
 namespace RZ.Foundation.Blazor.Shells;
 
 public delegate ViewModel ViewMaker(IViewModelFactory factory);
 
+[PublicAPI]
 public sealed record ShellOptions(string BasePath = "/")
 {
     public NavBarMode InitialNavBar { get; set; } = NavBarMode.New(NavBarType.Full);
