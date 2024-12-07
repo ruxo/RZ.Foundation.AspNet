@@ -9,6 +9,7 @@ public abstract class ViewModel : ReactiveObject
 {
     public Guid Id { get; } = Guid.CreateVersion7();
 
+    public virtual void Initialize() {}
     public virtual void ViewOnScreen() {}
     public virtual void ViewOffScreen() {}
 }

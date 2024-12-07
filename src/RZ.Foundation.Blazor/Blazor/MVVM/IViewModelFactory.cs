@@ -9,6 +9,11 @@ public interface IViewModelFactory
 
 public sealed class ViewModelFactory(IServiceProvider serviceProvider) : IViewModelFactory
 {
-    public T Create<T>(params object[] args) where T : ViewModel =>
-        ActivatorUtilities.CreateInstance<T>(serviceProvider, args);
+    public T Create<T>(params object[] args) where T : ViewModel {
+        var instance = ActivatorUtilities.CreateInstance<T>(serviceProvider, args);
+
+        // This is for F#-style initialization which needs the instance to be fully constructed before calling its properties
+        instance.Initialize();
+        return instance;
+    }
 }
