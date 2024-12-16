@@ -18,5 +18,5 @@ public static class BlazorSettings
           .AddScoped<IActivator, Activator>()
           .AddScoped<IEventBubbleSubscription, EventBubbleSubscription>()
           .AddScoped<ShellViewModel>(
-               sp => ActivatorUtilities.CreateInstance<ShellViewModel>(sp, options?.Invoke(sp) ?? new ShellOptions()));
+               sp => sp.GetRequiredService<IActivator>().Create<ShellViewModel>(options?.Invoke(sp) ?? new ShellOptions()));
 }
