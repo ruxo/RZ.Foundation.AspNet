@@ -4,7 +4,6 @@
 @using Microsoft.Extensions.Logging
 @using ReactiveUI
 @using RZ.Foundation.Blazor.Helpers
-@using RZ.Foundation.Blazor.MVVM
 @inherits ReactiveComponentBase<ShellViewModel>
 
 @inject NavigationManager NavManager
@@ -56,9 +55,9 @@
 
     readonly ShellNavMenuViewModel menu;
 
-    public Shell(IViewModelFactory vmFactory, ShellViewModel shell) {
+    public Shell(IActivator activator, ShellViewModel shell) {
         ViewModel = shell;
-        menu = vmFactory.Create<ShellNavMenuViewModel>();
+        menu = activator.Create<ShellNavMenuViewModel>();
 
         this.WhenActivated(disposables => {
             ViewModel!.Notifications

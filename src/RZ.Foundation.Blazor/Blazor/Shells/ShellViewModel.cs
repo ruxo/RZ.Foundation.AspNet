@@ -15,7 +15,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
 {
     readonly ILogger<ShellViewModel> logger;
     readonly TimeProvider clock;
-    readonly IViewModelFactory viewFactory;
+    readonly IActivator activator;
     readonly ShellOptions options;
     readonly Stack<ViewState> content = [];
     readonly Subject<NotificationEvent> notifications = new();
@@ -26,10 +26,10 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     NavBarMode navBarMode;
 
     public ShellViewModel(ILogger<ShellViewModel> logger, TimeProvider clock,
-                          IViewModelFactory viewFactory, ShellOptions options) {
+                          IActivator activator, ShellOptions options) {
         this.logger = logger;
         this.clock = clock;
-        this.viewFactory = viewFactory;
+        this.activator = activator;
         this.options = options;
 
         logger.LogDebug("Initializing ShellViewModel {Id}", Id);
@@ -180,7 +180,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
 
         ChangingStack(() => {
             content.Clear();
-            var view = navItem.View.Invoke(viewFactory);
+            var view = navItem.View.Invoke(activator);
 
             logger.LogDebug("Push view for {Path}", urlPath);
             content.Push(new(AppMode.Page.Default, view));

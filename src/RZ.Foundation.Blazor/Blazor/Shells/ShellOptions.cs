@@ -3,7 +3,7 @@ using RZ.Foundation.Blazor.MVVM;
 
 namespace RZ.Foundation.Blazor.Shells;
 
-public delegate ViewModel ViewMaker(IViewModelFactory factory);
+public delegate ViewModel ViewMaker(IActivator factory);
 
 [PublicAPI]
 public sealed record ShellOptions(string BasePath = "/")
