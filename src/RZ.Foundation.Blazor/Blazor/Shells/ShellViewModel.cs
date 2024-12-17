@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -18,7 +17,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     readonly ILogger<ShellViewModel> logger;
     readonly TimeProvider clock;
     readonly IActivator activator;
-    readonly ShellOptions options;
     readonly Stack<ViewState> content = [];
     readonly Subject<NotificationEvent> notifications = new();
     readonly ObservableAsPropertyHelper<bool> isDrawerVisible;
@@ -27,16 +25,14 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
 
     NavBarMode navBarMode;
 
-    public ShellViewModel(ILogger<ShellViewModel> logger, TimeProvider clock,
-                          IActivator activator, ShellOptions options) {
+    public ShellViewModel(ILogger<ShellViewModel> logger, TimeProvider clock, IActivator activator) {
         this.logger = logger;
         this.clock = clock;
         this.activator = activator;
-        this.options = options;
 
         logger.LogDebug("Initializing ShellViewModel {Id}", Id);
 
-        navBarMode = options.InitialNavBar;
+        navBarMode = NavBarMode.New(NavBarType.Full);
         isDrawerVisible = this.WhenAnyValue(x => x.NavBarMode,
                                             x => x.AppMode,
                                             x => x.StackCount,
@@ -48,11 +44,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         useMiniDrawer = this.WhenAnyValue(x => x.NavBarMode).Select(m => m.Type == NavBarType.Mini).ToProperty(this, x => x.UseMiniDrawer);
 
         ToggleDrawer = ReactiveCommand.Create(() => { IsDrawerOpen = !IsDrawerOpen; });
-
-        NavItems = new(options.Navigation);
     }
-
-    public string BasePath => options.BasePath;
 
     public bool IsDarkMode
     {
@@ -91,17 +83,9 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     public ViewModel? Content => content.TryPeek(out var v)? v.Content : null;
     public int StackCount => content.Count;
 
-    public ObservableCollection<Navigation> NavItems { get; }
-
     public IObservable<NotificationEvent> Notifications => notifications;
 
     public ReactiveCommand<RUnit, RUnit> ToggleDrawer { get; }
-
-    public string? GetShellPath(string navigationPath) {
-        var truePath = navigationPath.StartsWith(BasePath) ? navigationPath[BasePath.Length..] : null;
-        if (truePath?.Length == 0) truePath = "/";
-        return truePath is not null && truePath.StartsWith('/')? truePath : null;
-    }
 
     public void CloseCurrentView()
         => ChangingStack(() => content.Pop());
@@ -169,38 +153,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    public bool NavigateTo(string urlPath) {
-        var current = content.TryPeek(out var v) ? v : null;
-
-        if (current is null)
-            logger.LogDebug("Shell has no view");
-        else
-            logger.LogDebug("Shell content is {@Content}", current.Content);
-
-        var navItem = options.Navigation.OfType<Navigation.Item>().FirstOrDefault(x => x.NavPath == urlPath);
-        if (navItem is null){
-            logger.LogWarning("No navigation item found for path {Path}", urlPath);
-            return false;
-        }
-        logger.LogDebug("Navigating to {Path} for menu [{Title}]", urlPath, navItem.Title);
-
-        ChangingStack(() => {
-            content.Clear();
-            var view = navItem.View.Invoke(activator);
-
-            logger.LogDebug("Push view for {Path}", urlPath);
-            content.Push(new(AppMode.Page.Default, view));
-        });
-        return true;
-    }
-
-    public void NavigateToNotFound() {
-        ChangingStack(() => {
-            content.Clear();
-            content.Push(new(AppMode.Page.Default, BlankContentViewModel.Instance));
-        });
-    }
 }
 
 public sealed record ViewState(AppMode AppMode, ViewModel Content);

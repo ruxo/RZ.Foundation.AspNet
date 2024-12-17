@@ -9,8 +9,7 @@ namespace RZ.Foundation;
 [PublicAPI]
 public static class BlazorSettings
 {
-    public static IServiceCollection AddRzBlazorSettings(this IServiceCollection services,
-                                                         Func<IServiceProvider, ShellOptions>? options = null)
+    public static IServiceCollection AddRzBlazorSettings(this IServiceCollection services)
         => services
           .AddSingleton(TimeProvider.System)
           .AddSingleton<IViewFinder, ViewFinder>()
@@ -18,6 +17,5 @@ public static class BlazorSettings
           .AddScoped<IActivator, Activator>()
           .AddScoped<IEventBubbleSubscription, EventBubbleSubscription>()
           .AddScoped<AppChromeViewModel>()
-          .AddScoped<ShellViewModel>(
-               sp => sp.GetRequiredService<IActivator>().Create<ShellViewModel>(options?.Invoke(sp) ?? new ShellOptions()));
+          .AddScoped<ShellViewModel>(sp => sp.GetRequiredService<IActivator>().Create<ShellViewModel>());
 }

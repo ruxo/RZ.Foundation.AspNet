@@ -1,5 +1,4 @@
 ﻿@using System.Reactive.Linq
-@using Microsoft.AspNetCore.Components.Sections
 @using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @inherits ReactiveComponentBase<ShellNavMenuViewModel>
@@ -13,11 +12,8 @@
     <MudDrawer Elevation="2" Variant="DrawerVariant.Persistent"
                ClipMode="DrawerClipMode.Always"
                @bind-Open="ViewModel.IsDrawerOpen">
-        @if (ViewModel.IsDrawerOpen){
-            <MudDrawerHeader>
-                <SectionOutlet SectionName="drawer-title"/>
-            </MudDrawerHeader>
-        }
+        <MudDrawerHeader/>
+
         <MudNavMenu>
             @if (ChildContent is not null){
                 @ChildContent
