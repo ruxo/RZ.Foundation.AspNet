@@ -1,22 +1,23 @@
-﻿@using ReactiveUI
-@using Microsoft.AspNetCore.Components.Sections
+﻿@using Microsoft.AspNetCore.Components.Sections
 @inherits ReactiveComponentBase<ShellNavMenuViewModel>
 
 @inject NavigationManager NavManager
 
 @if (ViewModel!.IsDrawerVisible){
-    <MudDrawer Elevation="2" Variant="@ViewModel!.Variant" OpenMiniOnHover="ViewModel!.ShowOnHover"
+    <MudDrawer Elevation="2" Variant="DrawerVariant.Persistent"
                ClipMode="DrawerClipMode.Always"
-               @bind-Open="ViewModel!.IsDrawerOpen">
-        @if (ViewModel!.IsDrawerOpen){
-            <SectionOutlet SectionName="drawer-title"/>
+               @bind-Open="ViewModel.IsDrawerOpen">
+        @if (ViewModel.IsDrawerOpen){
+            <MudDrawerHeader>
+                <SectionOutlet SectionName="drawer-title"/>
+            </MudDrawerHeader>
         }
         <MudNavMenu>
             @if (ChildContent is not null){
                 @ChildContent
             }
         </MudNavMenu>
-        @if (ViewModel!.IsDrawerOpen){
+        @if (ViewModel.IsDrawerOpen){
             <MudSpacer/>
             <MudText Typo="Typo.subtitle2" Align="Align.Right" Style="border-top: 1px solid lightgray">
                 version @AppVersion.Current
@@ -29,7 +30,9 @@
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    public ShellNavMenu() {
-        this.WhenActivated(_ => { /* for activable view */ });
+    public ShellNavMenu(IActivator activator) {
+        ViewModel = activator.Create<ShellNavMenuViewModel>();
+        this.WhenActivated(d => ViewModel!.DisposeWith(d));
     }
+
 }

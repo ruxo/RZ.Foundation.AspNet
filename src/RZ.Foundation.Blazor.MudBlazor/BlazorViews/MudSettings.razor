@@ -4,3 +4,15 @@
 <MudPopoverProvider />
 <MudDialogProvider BackdropClick="false" />
 <MudSnackbarProvider />
+
+@code {
+
+    public MudSettings(ISnackbar snackbar) {
+        this.WhenActivated(disposables => {
+            ViewModel!.Notifications
+                      .Subscribe(m => snackbar.Add(m.Message, m.Severity.ToMudSeverity()))
+                      .DisposeWith(disposables);
+        });
+    }
+
+}

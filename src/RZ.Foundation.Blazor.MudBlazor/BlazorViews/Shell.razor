@@ -17,7 +17,7 @@
 
 <MudLayout Class="screen-height">
     @if (AppBar is null){
-        <ShellAppBar ViewModel="ViewModel"/>
+        <ShellAppBar/>
     }
     else{
         @AppBar
@@ -37,7 +37,7 @@
     </CascadingValue>
 
     <MudMainContent Class="max-height">
-        <SectionOutlet SectionName="content-top"/>
+        <SectionOutlet SectionName="content-topxxx"/>
 
         <MudContainer MaxWidth="@(MaxWidth ?? MudBlazor.MaxWidth.False)" Class="max-height">
             <ShellView />

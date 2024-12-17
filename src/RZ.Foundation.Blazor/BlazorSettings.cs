@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Concurrency;
+using CommunityToolkit.Mvvm.Messaging;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using RZ.Foundation.Blazor.MVVM;
@@ -17,6 +18,8 @@ public static class BlazorSettings
           .AddScoped<IScheduler>(_ => new SynchronizationContextScheduler(SynchronizationContext.Current!))
           .AddScoped<IActivator, Activator>()
           .AddScoped<IEventBubbleSubscription, EventBubbleSubscription>()
+          .AddScoped<IMessenger, WeakReferenceMessenger>()
+          .AddScoped<AppChromeViewModel>()
           .AddScoped<ShellViewModel>(
                sp => sp.GetRequiredService<IActivator>().Create<ShellViewModel>(options?.Invoke(sp) ?? new ShellOptions()));
 }
