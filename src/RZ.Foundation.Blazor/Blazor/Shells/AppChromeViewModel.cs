@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using ReactiveUI;
+﻿using ReactiveUI;
 using RZ.Foundation.Blazor.MVVM;
 
 namespace RZ.Foundation.Blazor.Shells;
@@ -9,7 +8,7 @@ public enum AppBarDisplayMode
     Page, Modal, Stacked
 }
 
-public partial class AppChromeViewModel : ViewModel
+public class AppChromeViewModel : ViewModel
 {
     readonly ObservableAsPropertyHelper<bool> iconOnly;
     readonly ObservableAsPropertyHelper<bool> isDrawerVisible;
@@ -31,10 +30,29 @@ public partial class AppChromeViewModel : ViewModel
         });
     }
 
-    [ObservableProperty] public partial bool IsDrawerOpen { get; set; }
-    [ObservableProperty] public partial bool UseMiniDrawer { get; set; }
-    [ObservableProperty] public partial Navigation[] SidebarNavItems { get; set; } = [];
-    [ObservableProperty] public partial AppBarDisplayMode AppBarMode { get; set; } = AppBarDisplayMode.Page;
+    public bool IsDrawerOpen
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public bool UseMiniDrawer
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    public Navigation[] SidebarNavItems
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = [];
+
+    public AppBarDisplayMode AppBarMode
+    {
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = AppBarDisplayMode.Page;
 
     public bool IconOnly => iconOnly.Value;
     public bool IsDrawerVisible => isDrawerVisible.Value;

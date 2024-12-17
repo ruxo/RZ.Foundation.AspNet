@@ -3,7 +3,6 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
 using ReactiveUI;
-using RZ.Foundation.Blazor.MVVM;
 using RZ.Foundation.Blazor.Shells;
 
 namespace RZ.Foundation.BlazorViews;

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using JetBrains.Annotations;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using RZ.Foundation.Blazor.MVVM;
 using RZ.Foundation.Blazor.Views;
+using RZ.Foundation.Types;
 
 namespace RZ.Foundation.Blazor.Shells;
 
@@ -86,7 +88,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     #endregion
 
     public AppMode AppMode => content.TryPeek(out var v)? v.AppMode : AppMode.Page.Default;
-    public ViewModel Content => content.TryPeek(out var v)? v.Content : BlankContentViewModel.Instance;
+    public ViewModel? Content => content.TryPeek(out var v)? v.Content : null;
     public int StackCount => content.Count;
 
     public ObservableCollection<Navigation> NavItems { get; }
@@ -101,7 +103,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         return truePath is not null && truePath.StartsWith('/')? truePath : null;
     }
 
-    public Unit CloseCurrentView()
+    public void CloseCurrentView()
         => ChangingStack(() => content.Pop());
 
     public NotificationMessage Notify(NotificationMessage message) {
@@ -109,26 +111,30 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         return message;
     }
 
-    public Unit CloneState(Func<ViewState, ViewState> stateBuilder) => ChangingStack(() => {
+    public void CloneState(Func<ViewState, ViewState> stateBuilder) => ChangingStack(() => {
         var newState = stateBuilder(content.Peek());
         content.Push(newState);
     });
 
-    public Unit PushModal(ViewModel? viewModel, Func<AppMode, AppMode> appModeGetter) => ChangingStack(() => {
-        var current = content.Peek();
-        var appMode = appModeGetter(current.AppMode);
+    public void PushModal(ViewModel? viewModel, Func<AppMode, AppMode> appModeGetter) {
+        if (viewModel is null && StackCount == 0)
+            throw new ErrorInfoException(StandardErrorCodes.InvalidRequest, "Push a null model while the stack is empty");
 
-        content.Push(new ViewState(AppMode: appMode, Content: viewModel ?? current.Content));
-    });
+        ChangingStack(() => {
+            var current = Content;
+            var appMode = appModeGetter(AppMode);
 
-    public Unit Push(ViewModel viewModel)
+            Debug.Assert(current is not null || viewModel is not null);
+            content.Push(new ViewState(AppMode: appMode, Content: (viewModel ?? current)!));
+        });
+    }
+
+    public void Push(ViewModel viewModel)
         => CloneState(current => current with { Content = viewModel });
 
-    public Unit PushModal(ViewModel? viewModel = null, ReactiveCommand<RUnit, RUnit>? onClose = default) {
-        onClose ??= ReactiveCommand.Create(() => {
-            CloseCurrentView();
-        });
-        return PushModal(viewModel, _ => new AppMode.Modal(onClose));
+    public void PushModal(ViewModel? viewModel = null, ReactiveCommand<RUnit, RUnit>? onClose = null) {
+        onClose ??= ReactiveCommand.Create(CloseCurrentView);
+        PushModal(viewModel, _ => new AppMode.Modal(onClose));
     }
 
     public Unit Replace(ViewModel replacement, AppMode? appMode = null) {
@@ -145,9 +151,8 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
 
     public IEnumerator<ViewState> GetEnumerator() => content.GetEnumerator();
 
-    Unit ChangingStack(Action action) {
-        if (content.Count > 0)
-            content.Peek().Content.ViewOffScreen();
+    void ChangingStack(Action action) {
+        Content?.ViewOffScreen();
 
         this.RaisePropertyChanging(nameof(Content));
         this.RaisePropertyChanging(nameof(AppMode));
@@ -159,8 +164,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         this.RaisePropertyChanged(nameof(AppMode));
         this.RaisePropertyChanged(nameof(Content));
 
-        content.Peek().Content.ViewOnScreen();
-        return unit;
+        Content?.ViewOnScreen();
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

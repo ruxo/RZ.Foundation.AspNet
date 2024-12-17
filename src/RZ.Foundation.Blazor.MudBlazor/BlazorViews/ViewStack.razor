@@ -1,0 +1,9 @@
+﻿
+<MudContainer MaxWidth="@MaxWidth" Class="max-height">
+    @if (Content is not null){
+        <ViewFrom Model="Content"/>
+    }
+    else{
+        @ChildContent
+    }
+</MudContainer>
