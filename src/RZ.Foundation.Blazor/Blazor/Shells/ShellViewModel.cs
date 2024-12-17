@@ -112,7 +112,8 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     }
 
     public void CloneState(Func<ViewState, ViewState> stateBuilder) => ChangingStack(() => {
-        var newState = stateBuilder(content.Peek());
+        var viewState = content.TryPeek(out var v) ? v : new ViewState(AppMode.Page.Default, BlankContentViewModel.Instance);
+        var newState = stateBuilder(viewState);
         content.Push(newState);
     });
 
