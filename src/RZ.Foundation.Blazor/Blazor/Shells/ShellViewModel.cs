@@ -45,6 +45,8 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
                               .ToProperty(this, x => x.IsDrawerVisible);
         useMiniDrawer = this.WhenAnyValue(x => x.NavBarMode).Select(m => m.Type == NavBarType.Mini).ToProperty(this, x => x.UseMiniDrawer);
 
+        ToggleDrawer = ReactiveCommand.Create(() => { IsDrawerOpen = !IsDrawerOpen; });
+
         NavItems = new(options.Navigation);
     }
 
@@ -91,7 +93,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
 
     public IObservable<NotificationEvent> Notifications => notifications;
 
-    public ReactiveCommand<RUnit, RUnit> ToggleDrawer => ReactiveCommand.Create(() => { IsDrawerOpen = !IsDrawerOpen; });
+    public ReactiveCommand<RUnit, RUnit> ToggleDrawer { get; }
 
     public string? GetShellPath(string navigationPath) {
         var truePath = navigationPath.StartsWith(BasePath) ? navigationPath[BasePath.Length..] : null;
@@ -129,7 +131,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         return PushModal(viewModel, _ => new AppMode.Modal(onClose));
     }
 
-    public Unit Replace(ViewModel replacement, AppMode? appMode = default) {
+    public Unit Replace(ViewModel replacement, AppMode? appMode = null) {
         this.RaisePropertyChanging(nameof(Content));
         if (appMode is not null)
             this.RaisePropertyChanging(nameof(AppMode));
