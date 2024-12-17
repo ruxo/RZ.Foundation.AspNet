@@ -11,6 +11,11 @@ using RZ.Foundation.Blazor.Views;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
+       .AddScoped<WelcomeViewModel>()
+       .AddScoped<ContentViewModel>()
+       .AddScoped<BlankContentViewModel>();
+
+builder.Services
        .AddMudServices()
        .AddRzBlazorSettings(_ => new ShellOptions("/app") {
             Navigation = [
