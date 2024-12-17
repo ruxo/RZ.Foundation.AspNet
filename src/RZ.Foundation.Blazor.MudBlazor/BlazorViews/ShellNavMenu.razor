@@ -1,9 +1,15 @@
-﻿@using Microsoft.AspNetCore.Components.Sections
+﻿@using System.Reactive.Linq
+@using Microsoft.AspNetCore.Components.Sections
+@using Microsoft.Extensions.Logging
+@using Microsoft.JSInterop
 @inherits ReactiveComponentBase<ShellNavMenuViewModel>
 
+@inject ILogger<ShellNavMenu> Logger
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 @if (ViewModel!.IsDrawerVisible){
+    <div @ref="drawer" tabindex="0">
     <MudDrawer Elevation="2" Variant="DrawerVariant.Persistent"
                ClipMode="DrawerClipMode.Always"
                @bind-Open="ViewModel.IsDrawerOpen">
@@ -24,15 +30,54 @@
             </MudText>
         }
     </MudDrawer>
+    </div>
 }
 
 @code {
+
+    DotNetObjectReference<ShellNavMenu> me = null!;
+
+    ElementReference drawer;
+    CompositeDisposable disposables = new();
+
+    bool blurTracking;
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     public ShellNavMenu(IActivator activator) {
         ViewModel = activator.Create<ShellNavMenuViewModel>();
-        this.WhenActivated(d => ViewModel!.DisposeWith(d));
+        this.WhenActivated(d => {
+            me = DotNetObjectReference.Create(this).DisposeWith(d);
+            this.WhenAnyValue(x => x.ViewModel!.IsDrawerOpen)
+                .Where(identity)
+                .Subscribe(async void (_) => {
+                     var (e, _) = await Try(drawer.FocusAsync().AsTask());
+                     if (e is not null)
+                         Logger.LogWarning(e, "Cannot focus drawer");
+                 })
+                .DisposeWith(d);
+
+            this.WhenAnyValue(x => x.ViewModel!.IsDrawerVisible)
+                .Where(identity)
+                .Subscribe(_ => blurTracking = false)
+                .DisposeWith(d);
+
+            ViewModel!.DisposeWith(d);
+            disposables.DisposeWith(d);
+        });
+    }
+
+    [JSInvokable]
+    public void OnBlur() {
+        if (ViewModel!.IsDrawerOpen)
+            ViewModel.IsDrawerOpen = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender || blurTracking) return;
+        blurTracking = true;
+
+        await JS.InvokeVoidAsync("rzBlazor.trackBlur", drawer, me);
     }
 
 }

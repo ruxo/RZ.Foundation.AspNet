@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using ReactiveUI;
 using RZ.Foundation.Blazor;
 using RZ.Foundation.Blazor.Shells;
 
@@ -22,9 +21,8 @@ public partial class ViewStack(AppChromeViewModel chrome, ShellViewModel shell) 
 
     protected override void OnAfterRender(bool firstRender) {
         if (firstRender || init) return;
-        init = true;
+        init = true;    // ensure this is only called once
 
-        Console.WriteLine($"OnAfterRender! {firstRender}");
         Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                        h => shell.PropertyChanged += h,
                        h => shell.PropertyChanged -= h)
@@ -35,12 +33,9 @@ public partial class ViewStack(AppChromeViewModel chrome, ShellViewModel shell) 
                                                : shell.AppMode is AppMode.Modal
                                                    ? AppBarDisplayMode.Modal
                                                    : AppBarDisplayMode.Stacked;
-                       Console.WriteLine($"Chrome AppBarMode ({chrome.Id}): {chrome.AppBarMode}");
                        StateHasChanged();
                    })
                   .DisposeWith(disposables);
-
-        chrome.WhenAnyValue(x => x.AppBarMode).Subscribe(v => Console.WriteLine($"Chrome AppBarMode CHANGED ({chrome.Id}): {v}")).DisposeWith(disposables);
 
         chrome.AppBarClicked.Subscribe(_ => {
             if (shell.StackCount > 0)
