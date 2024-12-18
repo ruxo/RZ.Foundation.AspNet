@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.AspNetCore.Components;
@@ -8,7 +9,7 @@ using RZ.Foundation.Blazor.Shells;
 
 namespace RZ.Foundation.BlazorViews;
 
-public partial class ViewStack(AppChromeViewModel chrome, ShellViewModel shell) : ComponentBase, IDisposable
+public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, ShellViewModel shell) : ComponentBase, IDisposable
 {
     bool init;
     CompositeDisposable disposables = new();
@@ -29,6 +30,7 @@ public partial class ViewStack(AppChromeViewModel chrome, ShellViewModel shell) 
                        h => shell.PropertyChanged += h,
                        h => shell.PropertyChanged -= h)
                   .Where(a => a.EventArgs.PropertyName == nameof(shell.Content))
+                  .ObserveOn(scheduler)
                   .Subscribe(_ => {
                        chrome.AppBarMode = shell.StackCount == 0
                                                ? AppBarDisplayMode.Page
