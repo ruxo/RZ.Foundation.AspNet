@@ -87,7 +87,7 @@ public static class ObservableExtensions
     public static IObservable<Outcome<T>> CatchToOutcome<T>(this IObservable<Outcome<T>> source)
         => source.Catch((Exception e) => Observable.Return(FailedOutcome<T>(e.ToErrorInfo())));
 
-    public static IObservable<Outcome<T>> CatchToOutcome<T>(this IObservable<T> source, Action<ErrorInfo>? handler = default) {
+    public static IObservable<Outcome<T>> CatchToOutcome<T>(this IObservable<T> source, Action<ErrorInfo>? handler = null) {
         var stream = source.Select(SuccessOutcome).CatchToOutcome();
         return handler is null
                    ? stream
@@ -99,8 +99,8 @@ public static class ObservableExtensions
 
     static ErrorInfo From<T>(Notification<T> r)
         => r.Exception is ErrorInfoException ei
-               ? new ErrorInfo(ei.Code, ei.Message)
-               : new ErrorInfo(StandardErrorCodes.Unhandled, r.Exception!.ToString());
+               ? ei.ToErrorInfo()
+               : new ErrorInfo(StandardErrorCodes.Unhandled, r.Exception!.ToString(), innerError: ErrorFrom.Exception(r.Exception));
 
     [PublicAPI]
     public static IObservable<ErrorInfo> GetErrorStream<T>(this IObservable<T> stream) =>
@@ -142,7 +142,7 @@ public static class ObservableExtensions
     static string DefaultTranslator(ErrorInfo e) => e.Message;
 
     static IDisposable TrapErrors(this IObservable<ErrorInfo> source, ShellViewModel shell,
-                                  Func<ErrorInfo, string> translator, ILogger? logger = default) =>
+                                  Func<ErrorInfo, string> translator, ILogger? logger = null) =>
         source.Subscribe(e => {
             if (logger is null)
                 Trace.WriteLine($"TrapErrors: {e.Code}:{e.Message}");
@@ -153,10 +153,10 @@ public static class ObservableExtensions
         });
 
     public static IDisposable TrapErrors<T>(this IObservable<Outcome<T>> source, ShellViewModel shell,
-                                            Func<ErrorInfo, string>? translator = default, ILogger? logger = default)
+                                            Func<ErrorInfo, string>? translator = null, ILogger? logger = null)
         => source.GetErrorStream().TrapErrors(shell, translator ?? DefaultTranslator, logger);
 
     public static IDisposable TrapErrors<T>(this IObservable<T> source, ShellViewModel shell,
-                                            Func<ErrorInfo, string>? translator = default, ILogger? logger = default)
+                                            Func<ErrorInfo, string>? translator = null, ILogger? logger = null)
         => source.GetErrorStream().TrapErrors(shell, translator ?? DefaultTranslator, logger);
 }
