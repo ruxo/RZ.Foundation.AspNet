@@ -13,7 +13,9 @@ public partial class ViewStack(AppChromeViewModel chrome, ShellViewModel shell) 
     bool init;
     CompositeDisposable disposables = new();
 
-    [Parameter] public MaxWidth MaxWidth { get; set; } = MaxWidth.False;
+    [CascadingParameter(Name="DefaultMaxWidth")] public MaxWidth? DefaultMaxWidth { get; set; }
+
+    [Parameter] public MaxWidth? MaxWidth { get; set; }
     [Parameter, EditorRequired] public required RenderFragment ChildContent { get; set; }
 
     ViewModel? Content => shell.Content;
