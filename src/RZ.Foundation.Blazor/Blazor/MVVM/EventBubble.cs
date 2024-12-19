@@ -16,13 +16,13 @@ public abstract record EventBubble
 
 public delegate ValueTask<EventBubble?> EventBubbleListener(EventBubble bubble);
 
+[PublicAPI]
 public interface IEventBubbleSubscription
 {
     /// <summary>
     /// The hook point to subscribe to listen to the event stream. Listeners will be called in the order of subscription,
     /// and the event will be passed to the next listener if the listener returns a non-null value.
     /// </summary>
-    [PublicAPI]
     IDisposable Subscribe(EventBubbleListener listener);
 
     /// <summary>
@@ -30,7 +30,6 @@ public interface IEventBubbleSubscription
     /// </summary>
     /// <param name="event"></param>
     /// <returns></returns>
-    [PublicAPI]
     ValueTask<Unit> Raise(EventBubble @event);
 }
 
