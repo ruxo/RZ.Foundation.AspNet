@@ -1,8 +1,9 @@
 @using Microsoft.AspNetCore.Components.Routing
 
-@inject ShellViewModel Shell
+@inject NavigationManager NavManager
+@inject AppChromeViewModel Chrome
 
-<MudNavLink Icon="@Icon" Href="@Href" Match="Match">
+<MudNavLink Icon="@Icon" Match="Match" OnClick="@Clicked">
     @if (!IconOnly){
     @ChildContent
     }
@@ -18,5 +19,10 @@
 
     [CascadingParameter(Name = "IconOnly")]
     bool IconOnly { get; set; }
+
+    void Clicked() {
+        Chrome.IsDrawerOpen = false;
+        NavManager.NavigateTo(Href);
+    }
 
 }
