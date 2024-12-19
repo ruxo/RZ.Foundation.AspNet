@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Diagnostics;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -19,8 +18,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     readonly IActivator activator;
     readonly Stack<ViewState> content = [];
     readonly Subject<NotificationEvent> notifications = new();
-    readonly ObservableAsPropertyHelper<bool> isDrawerVisible;
-    readonly ObservableAsPropertyHelper<bool> useMiniDrawer;
     const int MaxNotifications = 20;
 
     NavBarMode navBarMode;
@@ -33,15 +30,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         logger.LogDebug("Initializing ShellViewModel {Id}", Id);
 
         navBarMode = NavBarMode.New(NavBarType.Full);
-        isDrawerVisible = this.WhenAnyValue(x => x.NavBarMode,
-                                            x => x.AppMode,
-                                            x => x.StackCount,
-                                            (navBar, app, stackCount) => app is AppMode.Page
-                                                                      && stackCount == 1
-                                                                      && navBar.Type is NavBarType.Full or NavBarType.Mini
-                                                                      && navBar.Visible)
-                              .ToProperty(this, x => x.IsDrawerVisible);
-        useMiniDrawer = this.WhenAnyValue(x => x.NavBarMode).Select(m => m.Type == NavBarType.Mini).ToProperty(this, x => x.UseMiniDrawer);
 
         ToggleDrawer = ReactiveCommand.Create(() => { IsDrawerOpen = !IsDrawerOpen; });
     }
@@ -72,10 +60,6 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
             this.RaisePropertyChanged();
         }
     }
-
-    public bool IsDrawerVisible => isDrawerVisible.Value;
-
-    public bool UseMiniDrawer => useMiniDrawer.Value;
 
     #endregion
 
@@ -142,9 +126,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         this.RaisePropertyChanging(nameof(Content));
         this.RaisePropertyChanging(nameof(AppMode));
         this.RaisePropertyChanging(nameof(StackCount));
-        this.RaisePropertyChanging(nameof(IsDrawerVisible));
         action();
-        this.RaisePropertyChanged(nameof(IsDrawerVisible));
         this.RaisePropertyChanged(nameof(StackCount));
         this.RaisePropertyChanged(nameof(AppMode));
         this.RaisePropertyChanged(nameof(Content));
