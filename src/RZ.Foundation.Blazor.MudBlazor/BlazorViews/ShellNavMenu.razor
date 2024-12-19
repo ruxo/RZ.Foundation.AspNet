@@ -44,15 +44,6 @@
         ViewModel = activator.Create<ShellNavMenuViewModel>();
         this.WhenActivated(d => {
             me = DotNetObjectReference.Create(this).DisposeWith(d);
-            this.WhenAnyValue(x => x.ViewModel!.IsDrawerOpen)
-                .Where(identity)
-                .Subscribe(async void (_) => {
-                     var (e, _) = await Try(drawer.FocusAsync().AsTask());
-                     if (e is not null)
-                         Logger.LogWarning(e, "Cannot focus drawer");
-                 })
-                .DisposeWith(d);
-
             this.WhenAnyValue(x => x.ViewModel!.IsDrawerVisible)
                 .Where(identity)
                 .Subscribe(_ => blurTracking = false)
@@ -72,6 +63,15 @@
     protected override async Task OnAfterRenderAsync(bool firstRender) {
         if (!firstRender && !blurTracking){
             blurTracking = true;
+
+            this.WhenAnyValue(x => x.ViewModel!.IsDrawerOpen)
+                .Where(identity)
+                .Subscribe(async void (_) => {
+                     var (e, _) = await Try(drawer.FocusAsync().AsTask());
+                     if (e is not null)
+                         Logger.LogWarning(e, "Cannot focus drawer");
+                 })
+                .DisposeWith(disposables);
 
             await JS.InvokeVoidAsync("rzBlazor.trackBlur", drawer, me);
         }
