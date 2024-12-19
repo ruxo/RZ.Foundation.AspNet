@@ -70,10 +70,12 @@
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender) {
-        if (firstRender || blurTracking) return;
-        blurTracking = true;
+        if (!firstRender && !blurTracking){
+            blurTracking = true;
 
-        await JS.InvokeVoidAsync("rzBlazor.trackBlur", drawer, me);
+            await JS.InvokeVoidAsync("rzBlazor.trackBlur", drawer, me);
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
 }
