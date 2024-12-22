@@ -1,4 +1,4 @@
-﻿namespace RZ.AspNet.Blazor;
+﻿namespace RZ.AspNet.Common;
 
 public class HstsModule : AppModule
 {

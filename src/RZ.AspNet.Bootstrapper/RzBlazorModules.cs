@@ -1,13 +1,22 @@
-﻿using RZ.AspNet;
+﻿using Microsoft.AspNetCore.Authorization;
+using RZ.AspNet;
+using RZ.AspNet.Blazor;
+using RZ.AspNet.Common;
 
 namespace RZ.Foundation;
 
 [PublicAPI]
 public static class RzBlazorModules
 {
-    public static AppModule HandleErrors(string path404 = "/") => new AspNet.Blazor.ErrorHandlerModule(path404);
-    public static AppModule EnforceHsts() => new AspNet.Blazor.HstsModule();
-    public static AppModule ExposeMappedAssets() => new AspNet.Blazor.AssetMapModule();
+    public static AppModule ExposeMappedAssets() => new AssetMapModule();
 
-    public static AppModule UseBlazorServer<TApp>() => new AspNet.Blazor.BlazorTerminalModule<TApp>();
+    public static AppModule HandleBlazorErrors(string path404 = "/") => new ServerErrorHandlerModule(path404);
+    public static AppModule UseBlazorServer<TApp>(BlazorSetupMode mode = BlazorSetupMode.Server)
+        => new BlazorTerminalModule<TApp>(mode);
+
+    public static AppModule ConfigureAuthentication(Action<AuthorizationOptions> authOptions, params Action<IHostApplicationBuilder>[] authBuilders)
+        => new BlazorAuthModule(authOptions, authBuilders);
+
+    public static AppModule ConfigureAuthentication(params Action<IHostApplicationBuilder>[] authBuilders)
+        => new BlazorAuthModule(authOptions: null, authBuilders);
 }

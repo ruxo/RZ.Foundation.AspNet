@@ -21,12 +21,13 @@ public static class AspHost
 
     [ExcludeFromCodeCoverage]
     public static IConfiguration CreateDefaultConfigurationSettings() {
-        var runningEnvironment = Optional(Environment.GetEnvironmentVariable(EnvironmentKey)).IfNone("Production");
-
         return new ConfigurationBuilder()
               .AddJsonFile("appsettings.json")
-              .AddJsonFile($"appsettings.{runningEnvironment}.json", optional: true)
+              .AddJsonFile($"appsettings.{Environment}.json", optional: true)
               .AddEnvironmentVariables()
               .Build();
     }
+
+    public static string Environment
+        => System.Environment.GetEnvironmentVariable(EnvironmentKey) ?? "Production";
 }

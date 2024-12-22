@@ -1,4 +1,4 @@
-﻿namespace RZ.AspNet;
+﻿namespace RZ.AspNet.Blazor;
 
 [PublicAPI]
 public class BlazorServerModule<TApp> : AppModule
