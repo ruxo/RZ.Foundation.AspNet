@@ -76,7 +76,7 @@ public static class RzApi
 }
 
 [PublicAPI]
-public class ApiControllerBase(ILogger? logger = default) : ControllerBase
+public class ApiControllerBase(ILogger? logger = null) : ControllerBase
 {
     public virtual ErrorInfo InterpretError(Exception e) =>
         e is ErrorInfoException einfo ? einfo.ToErrorInfo() : ErrorFrom.Exception(e);
