@@ -1,11 +1,17 @@
 ﻿@inherits ReactiveInjectableComponentBase<ShellViewModel>
 
-<MudThemeProvider @bind-IsDarkMode="ViewModel!.IsDarkMode" />
+<MudThemeProvider @bind-IsDarkMode="ViewModel!.IsDarkMode" Theme="Theme" />
 <MudPopoverProvider />
-<MudDialogProvider BackdropClick="false" />
+<MudDialogProvider BackdropClick="BackdropClick" />
 <MudSnackbarProvider />
 
 @code {
+
+    [Parameter]
+    public MudTheme? Theme { get; set; }
+
+    [Parameter]
+    public bool BackdropClick { get; set; }
 
     public MudSettings(ISnackbar snackbar) {
         this.WhenActivated(disposables => {
