@@ -7,11 +7,21 @@ using RZ.Foundation.Types;
 
 namespace RZ.Foundation.Blazor.MVVM;
 
+[PublicAPI]
 public abstract record EventBubble
 {
     [MethodImpl(MethodImplOptions.NoOptimization)]
-    [PublicAPI]
     public static EventBubble? NoRaise(Unit _) => null;
+
+    public static EventBubble? NoRaise(Action action) {
+        action();
+        return null;
+    }
+
+    public static EventBubble? NoRaise<T>(Action<T> action, T arg) {
+        action(arg);
+        return null;
+    }
 }
 
 public delegate ValueTask<EventBubble?> EventBubbleListener(EventBubble bubble);
