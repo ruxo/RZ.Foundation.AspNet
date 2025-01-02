@@ -1,5 +1,5 @@
 ﻿
-<MudContainer MaxWidth="@(MaxWidth ?? DefaultMaxWidth ?? MudBlazor.MaxWidth.False)" Class="@EffectiveClass">
+<MudContainer MaxWidth="@(MaxWidth ?? DefaultMaxWidth ?? MudBlazor.MaxWidth.False)" Gutters="false" Class="@EffectiveClass">
     @if (Content is not null){
         <ViewFrom Model="Content"/>
     }
