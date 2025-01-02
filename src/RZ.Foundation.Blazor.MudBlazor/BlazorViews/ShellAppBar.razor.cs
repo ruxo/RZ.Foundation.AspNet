@@ -6,11 +6,13 @@ using RZ.Foundation.Blazor.Shells;
 
 namespace RZ.Foundation.BlazorViews;
 
-public class ShellAppBarViewModel : ViewModel
+public class ShellAppBarViewModel : ViewModel, IActivatableViewModel
 {
     readonly ObservableAsPropertyHelper<string> icon;
 
     public ShellAppBarViewModel(AppChromeViewModel chrome) {
+        var disposables = new CompositeDisposable();
+
         icon = chrome.WhenAnyValue(x => x.AppBarMode)
                      .Select(x => x switch {
                           AppBarDisplayMode.Page    => Icons.Material.Filled.Menu,
@@ -19,12 +21,16 @@ public class ShellAppBarViewModel : ViewModel
                           _                         => Icons.Material.Filled.Cancel
                       })
                      .ToProperty(this, x => x.Icon)
-                     .DisposeWith(Disposables);
+                     .DisposeWith(disposables);
 
         Clicked = chrome.AppBarClicked;
+
+        this.WhenActivated(d => disposables.DisposeWith(d));
     }
 
     public string Icon => icon.Value;
 
     public ReactiveCommand<RUnit, RUnit> Clicked { get; }
+
+    ViewModelActivator IActivatableViewModel.Activator { get; } = new();
 }

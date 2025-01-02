@@ -16,6 +16,5 @@
 
     public ShellAppBar(IActivator activator) {
         ViewModel = activator.Create<ShellAppBarViewModel>();
-        this.WhenActivated(d => ViewModel!.DisposeWith(d));
     }
 }

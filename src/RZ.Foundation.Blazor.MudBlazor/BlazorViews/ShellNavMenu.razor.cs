@@ -7,8 +7,9 @@ using RZ.Foundation.Blazor.Shells;
 
 namespace RZ.Foundation.BlazorViews;
 
-public class ShellNavMenuViewModel : ViewModel
+public class ShellNavMenuViewModel : ViewModel, IDisposable
 {
+    readonly CompositeDisposable disposables = new();
     readonly ObservableAsPropertyHelper<DrawerVariant> variant;
 
     readonly AppChromeViewModel chrome;
@@ -20,10 +21,14 @@ public class ShellNavMenuViewModel : ViewModel
         variant = chrome.WhenAnyValue(x => x.UseMiniDrawer)
                        .Select(x => x ? DrawerVariant.Mini : DrawerVariant.Temporary)
                        .ToProperty(this, x => x.Variant)
-                       .DisposeWith(Disposables);
+                       .DisposeWith(disposables);
 
         ForwardPropertyEvents(chrome, nameof(IsDrawerOpen), nameof(IsDrawerVisible), nameof(ShowOnHover), nameof(IconOnly))
-           .DisposeWith(Disposables);
+           .DisposeWith(disposables);
+    }
+
+    public void Dispose() {
+        disposables.Dispose();
     }
 
     public DrawerVariant Variant => variant.Value;

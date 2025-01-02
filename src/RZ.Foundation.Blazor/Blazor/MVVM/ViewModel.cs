@@ -12,11 +12,9 @@ using RZ.Foundation.Types;
 namespace RZ.Foundation.Blazor.MVVM;
 
 [PublicAPI]
-public abstract class ViewModel : ReactiveObject, IDisposable
+public abstract class ViewModel : ReactiveObject
 {
     public string Id => GetHashCode().ToString();
-
-    Lazy<CompositeDisposable> disposables = new(() => new());
 
     public virtual void ViewOnScreen() {}
     public virtual void ViewOffScreen() {}
@@ -34,25 +32,23 @@ public abstract class ViewModel : ReactiveObject, IDisposable
                                 .Subscribe(a => this.RaisePropertyChanged(a.EventArgs.PropertyName));
         return new CompositeDisposable(changing, changed);
     }
-
-    public virtual void Dispose() {
-        if (disposables.IsValueCreated)
-            Disposables.Dispose();
-    }
-
-    protected CompositeDisposable Disposables => disposables.Value;
 }
 
 [PublicAPI]
-public abstract class AppViewModel : ViewModel
+public abstract class AppViewModel : ViewModel, IActivatableViewModel, IDisposable
 {
     CancellationTokenSource quitToken = new();
+    bool disposed;
     readonly VmToolkit tool;
 
     protected AppViewModel(VmToolkit tool) {
         this.tool = tool;
         Quit = quitToken.Token;
+
+        this.WhenActivated(d => this.DisposeWith(d));
     }
+
+    ViewModelActivator IActivatableViewModel.Activator { get; } = new();
 
     protected IActivator Activator => tool.Activator;
     protected ILogger Logger => tool.Logger;
@@ -62,10 +58,12 @@ public abstract class AppViewModel : ViewModel
 
     protected CancellationToken Quit { get; }
 
-    public override void Dispose() {
+    public void Dispose() {
+        if (Interlocked.Exchange(ref disposed, true))
+            return;
+
         quitToken.Cancel();
         quitToken.Dispose();
-        base.Dispose();
     }
 
     protected void RunBackground(Func<Task> init, Action<ViewStatus>? setStatus = null, Func<Exception, string>? translator = null) {
