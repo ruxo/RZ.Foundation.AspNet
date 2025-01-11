@@ -3,13 +3,14 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
 using RZ.Foundation.Blazor;
 using RZ.Foundation.Blazor.Shells;
 
 namespace RZ.Foundation.BlazorViews;
 
-public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, ShellViewModel shell) : ComponentBase, IDisposable
+public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, ShellViewModel shell, IJSRuntime js) : ComponentBase, IDisposable
 {
     bool init;
     CompositeDisposable disposables = new();
@@ -21,6 +22,17 @@ public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, 
 
     ViewModel? Content => shell.Content;
     ShellViewModel Shell => shell;
+
+    bool needScrollToTop;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (needScrollToTop){
+            needScrollToTop = false;
+
+            await js.InvokeVoidAsync("window.scrollTo", 0, 0);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     protected override void OnAfterRender(bool firstRender) {
         if (firstRender || init) return;
@@ -37,6 +49,7 @@ public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, 
                                                : shell.AppMode is AppMode.Modal
                                                    ? AppBarDisplayMode.Modal
                                                    : AppBarDisplayMode.Stacked;
+                       needScrollToTop = true;
                        StateHasChanged();
                    })
                   .DisposeWith(disposables);

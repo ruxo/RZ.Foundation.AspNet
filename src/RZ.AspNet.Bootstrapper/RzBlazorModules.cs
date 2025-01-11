@@ -17,7 +17,7 @@ public static class RzBlazorModules
         => new BlazorTerminalModule<TApp>(additionalAssemblies: additionalAssemblies);
 
     public static AppModule UseBlazorServer<TApp>(BlazorSetupMode mode = BlazorSetupMode.Server, params Assembly[] additionalAssemblies)
-        => new BlazorTerminalModule<TApp>(mode, additionalAssemblies);
+        => new BlazorTerminalModule<TApp>(mode, additionalAssemblies: additionalAssemblies);
 
     public static AppModule ConfigureAuthentication(Action<AuthorizationOptions> authOptions, params Action<IHostApplicationBuilder>[] authBuilders)
         => new BlazorAuthModule(authOptions, authBuilders);

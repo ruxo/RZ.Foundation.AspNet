@@ -15,17 +15,15 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
 {
     readonly ILogger<ShellViewModel> logger;
     readonly TimeProvider clock;
-    readonly IActivator activator;
     readonly Stack<ViewState> content = [];
     readonly Subject<NotificationEvent> notifications = new();
     const int MaxNotifications = 20;
 
     NavBarMode navBarMode;
 
-    public ShellViewModel(ILogger<ShellViewModel> logger, TimeProvider clock, IActivator activator) {
+    public ShellViewModel(ILogger<ShellViewModel> logger, TimeProvider clock) {
         this.logger = logger;
         this.clock = clock;
-        this.activator = activator;
 
         logger.LogDebug("Initializing ShellViewModel {Id}", Id);
 

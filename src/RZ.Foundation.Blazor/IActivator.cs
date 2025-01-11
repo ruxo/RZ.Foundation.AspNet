@@ -2,13 +2,8 @@
 
 namespace RZ.Foundation;
 
-public interface IActivator
+public static class Activator
 {
-    T Create<T>(params object[] args);
-}
-
-public sealed class Activator(IServiceProvider serviceProvider) : IActivator
-{
-    public T Create<T>(params object[] args)
-        => ActivatorUtilities.CreateInstance<T>(serviceProvider, args);
+    public static T Create<T>(this IServiceProvider sp, params object[] args)
+        => ActivatorUtilities.CreateInstance<T>(sp, args);
 }

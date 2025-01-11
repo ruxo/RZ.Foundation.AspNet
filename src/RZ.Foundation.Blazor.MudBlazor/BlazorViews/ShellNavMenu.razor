@@ -40,8 +40,8 @@
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    public ShellNavMenu(IActivator activator) {
-        ViewModel = activator.Create<ShellNavMenuViewModel>();
+    public ShellNavMenu(IServiceProvider sp) {
+        ViewModel = sp.Create<ShellNavMenuViewModel>();
         this.WhenActivated(d => {
             me = DotNetObjectReference.Create(this).DisposeWith(d);
             this.WhenAnyValue(x => x.ViewModel!.IsDrawerVisible)

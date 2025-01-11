@@ -50,7 +50,7 @@ public abstract class AppViewModel : ViewModel, IActivatableViewModel, IDisposab
 
     ViewModelActivator IActivatableViewModel.Activator { get; } = new();
 
-    protected IActivator Activator => tool.Activator;
+    protected IServiceProvider Services => tool.Services;
     protected ILogger Logger => tool.Logger;
     protected IHostEnvironment Host => tool.Host;
     protected ShellViewModel Shell => tool.Shell;

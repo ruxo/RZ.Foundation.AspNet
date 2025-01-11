@@ -15,9 +15,8 @@ public static class BlazorSettings
           .AddSingleton(TimeProvider.System)
           .AddSingleton<IViewFinder, ViewFinder>()
           .AddScoped<IScheduler>(_ => new SynchronizationContextScheduler(SynchronizationContext.Current!))
-          .AddScoped<IActivator, Activator>()
           .AddScoped<IEventBubbleSubscription, EventBubbleSubscription>()
           .AddScoped(typeof(VmToolkit<>))
           .AddScoped<AppChromeViewModel>()
-          .AddScoped<ShellViewModel>(sp => sp.GetRequiredService<IActivator>().Create<ShellViewModel>());
+          .AddScoped<ShellViewModel>(sp => sp.Create<ShellViewModel>());
 }
