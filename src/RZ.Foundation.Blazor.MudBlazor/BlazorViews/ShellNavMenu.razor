@@ -11,7 +11,7 @@
     <div @ref="drawer" tabindex="0">
     <MudDrawer Elevation="2" Variant="DrawerVariant.Persistent"
                ClipMode="DrawerClipMode.Always"
-               @bind-Open="ViewModel.IsDrawerOpen">
+               @bind-Open="ViewModel.IsDrawerOpen" Class="@Class" Style="@Style">
         <MudDrawerHeader/>
 
         <MudNavMenu>
@@ -38,6 +38,8 @@
 
     bool blurTracking;
 
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     public ShellNavMenu(IServiceProvider sp) {

@@ -3,13 +3,16 @@
 @inject NavigationManager NavManager
 @inject AppChromeViewModel Chrome
 
-<MudNavLink Icon="@Icon" Match="Match" OnClick="@Clicked">
+<MudNavLink Icon="@Icon" Match="Match" OnClick="@Clicked" Class="@Class" Style="@Style">
     @if (!IconOnly){
     @ChildContent
     }
 </MudNavLink>
 
 @code {
+
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
 
     [Parameter, EditorRequired] public required string Href { get; set; }
     [Parameter, EditorRequired] public required RenderFragment ChildContent { get; set; }

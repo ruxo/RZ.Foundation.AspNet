@@ -1,4 +1,4 @@
-﻿<MudGrid Spacing="2" Class="pa-4 max-height">
+﻿<MudGrid Spacing="2" Class="@EffectiveClass" Style="@Style">
     <MudItem md="6" Class="max-height">
         <MudPaper Class="pa-8 rounded-xl max-height" Style="@PaperStyle">
             @LeftPanel
@@ -16,6 +16,8 @@
 
 @code {
 
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
     [Parameter, EditorRequired] public required RenderFragment LeftPanel { get; set; }
 
     [Parameter] public RenderFragment? RightPanel { get; set; }
@@ -24,4 +26,5 @@
 
     const string PaperStyle = "overflow: auto";
 
+    string EffectiveClass => $"pa-4 max-height {Class}";
 }
