@@ -4,5 +4,3 @@ export function trackBlur(element, menuView){
             menuView.invokeMethodAsync('OnBlur');
     });
 }
-
-window.rzBlazor = { trackBlur };

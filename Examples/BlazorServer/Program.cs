@@ -15,7 +15,7 @@ builder.Services
 
 builder.Services
        .AddMudServices()
-       .AddRzBlazorSettings()
+       .AddRzMudBlazorSettings()
        .AddRazorComponents()
        .AddInteractiveServerComponents();
 
