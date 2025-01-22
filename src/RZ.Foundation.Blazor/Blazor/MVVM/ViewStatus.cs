@@ -13,7 +13,7 @@ public abstract record ViewStatus
         public static readonly ViewStatus Instance = new Idle();
     }
 
-    public sealed record Loading : ViewStatus
+    public sealed record Loading(string? Message = null) : ViewStatus
     {
         [PublicAPI]
         public static readonly ViewStatus Instance = new Loading();

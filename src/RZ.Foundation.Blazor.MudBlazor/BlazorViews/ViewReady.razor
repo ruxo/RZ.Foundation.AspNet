@@ -1,9 +1,9 @@
 ﻿@using RZ.Foundation.Blazor.MVVM
 @using RZ.Foundation.Types
 @switch (Status){
-    case ViewStatus.Loading:
+    case ViewStatus.Loading stat:
         <MudStack AlignItems="AlignItems.Center">
-            <MudText>@WaitMessage</MudText>
+            <MudText>@(stat.Message ?? WaitMessage)</MudText>
             <MudProgressCircular Color="Color.Info" Size="Size.Medium" Indeterminate="true"/>
         </MudStack>
         break;
