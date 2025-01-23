@@ -11,10 +11,12 @@
 
 @if (ViewModel!.IsDrawerVisible){
     <div @ref="drawer" tabindex="0">
-    <MudDrawer Elevation="2" Variant="DrawerVariant.Persistent"
+    <MudDrawer Elevation="2" Variant="DrawerVariant.Responsive"
                ClipMode="DrawerClipMode.Always"
                @bind-Open="ViewModel.IsDrawerOpen" Class="@Class" Style="@Style">
-        <MudDrawerHeader/>
+        <MudDrawerHeader>
+            @Header
+        </MudDrawerHeader>
 
         <MudNavMenu>
             @if (ChildContent is not null){
@@ -23,9 +25,16 @@
         </MudNavMenu>
         @if (ViewModel.IsDrawerOpen){
             <MudSpacer/>
-            <MudText Typo="Typo.subtitle2" Align="Align.Right" Style="border-top: 1px solid lightgray">
-                version @AppVersion.Current
-            </MudText>
+            <MudStack Spacing="0" Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Baseline"
+                      Style="border-top: 1px solid var(--mud-palette-lines-default);padding: 4px;background-color: var(--mud-palette-surface)">
+                @if (Footer is null){
+                    <span></span>
+                }
+                else{
+                    @Footer
+                }
+                <MudText Typo="Typo.subtitle2">version @AppVersion.Current</MudText>
+            </MudStack>
         }
     </MudDrawer>
     </div>
@@ -43,6 +52,9 @@
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Style { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public RenderFragment? Header { get; set; }
+    [Parameter] public RenderFragment? Footer { get; set; }
 
     public ShellNavMenu(IServiceProvider sp) {
         ViewModel = sp.Create<ShellNavMenuViewModel>();
