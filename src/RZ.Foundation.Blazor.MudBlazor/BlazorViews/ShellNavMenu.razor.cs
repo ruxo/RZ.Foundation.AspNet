@@ -16,7 +16,7 @@ public class ShellNavMenuViewModel : ViewModel, IDisposable
 
     public ShellNavMenuViewModel(ILogger<ShellNavMenuViewModel> logger, AppChromeViewModel chrome) {
         this.chrome = chrome;
-        logger.LogDebug("Creating ShellNavMenuViewModel {Id} with Shell ID {ShellId}", Id, chrome.Id);
+        logger.LogDebug("Creating ShellNavMenuViewModel {Id} with Shell ID {ShellId}", ViewModelId, chrome.ViewModelId);
 
         variant = chrome.WhenAnyValue(x => x.UseMiniDrawer)
                        .Select(x => x ? DrawerVariant.Mini : DrawerVariant.Temporary)

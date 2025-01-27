@@ -25,7 +25,7 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
         this.logger = logger;
         this.clock = clock;
 
-        logger.LogDebug("Initializing ShellViewModel {Id}", Id);
+        logger.LogDebug("Initializing ShellViewModel {Id}", ViewModelId);
 
         navBarMode = NavBarMode.New(NavBarType.Full);
 

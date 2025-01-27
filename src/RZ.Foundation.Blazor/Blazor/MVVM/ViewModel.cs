@@ -14,7 +14,7 @@ namespace RZ.Foundation.Blazor.MVVM;
 [PublicAPI]
 public abstract class ViewModel : ReactiveObject
 {
-    public string Id => GetHashCode().ToString();
+    public string ViewModelId => GetHashCode().ToString();
 
     public virtual void ViewOnScreen() {}
     public virtual void ViewOffScreen() {}
