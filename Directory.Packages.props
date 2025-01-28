@@ -14,7 +14,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.1" />
     <PackageVersion Include="ReactiveUI.Blazor" Version="20.1.63" />
     <PackageVersion Include="FluentValidation" Version="11.11.0" />
-    <PackageVersion Include="MudBlazor" Version="7.16.0" />
+    <PackageVersion Include="MudBlazor" Version="[7.16,8)" />
     <PackageVersion Include="coverlet.collector" Version="6.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
