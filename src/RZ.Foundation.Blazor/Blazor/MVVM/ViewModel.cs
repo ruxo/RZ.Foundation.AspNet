@@ -35,19 +35,8 @@ public abstract class ViewModel : ReactiveObject
 }
 
 [PublicAPI]
-public abstract class AppViewModel : ViewModel, IActivatableViewModel, IDisposable
+public abstract class AppViewModel(VmToolkit tool) : ViewModel, IActivatableViewModel
 {
-    CancellationTokenSource quitToken = new();
-    bool disposed;
-    readonly VmToolkit tool;
-
-    protected AppViewModel(VmToolkit tool) {
-        this.tool = tool;
-        Quit = quitToken.Token;
-
-        this.WhenActivated(d => this.DisposeWith(d));
-    }
-
     ViewModelActivator IActivatableViewModel.Activator { get; } = new();
 
     protected IServiceProvider Services => tool.Services;
@@ -56,45 +45,33 @@ public abstract class AppViewModel : ViewModel, IActivatableViewModel, IDisposab
     protected ShellViewModel Shell => tool.Shell;
     protected IEventBubbleSubscription Bubble => tool.Bubble;
 
-    protected CancellationToken Quit { get; }
-
-    public void Dispose() {
-        if (Interlocked.Exchange(ref disposed, true))
-            return;
-
-        quitToken.Cancel();
-        quitToken.Dispose();
+    protected void RunBackground(Func<Task> init, Action<ViewStatus>? setStatus = null, Func<Exception, string>? translator = null, [CallerMemberName] string? caller = null) {
+        Task.Run(() => RunInit(init, setStatus, translator, caller));
     }
 
-    protected void RunBackground(Func<Task> init, Action<ViewStatus>? setStatus = null, Func<Exception, string>? translator = null) {
-        Task.Run(() => RunInit(init, setStatus, translator), Quit);
-    }
-
-    protected async Task RunInit(Func<Task> init, Action<ViewStatus>? setStatus = null, Func<Exception, string>? translator = null) {
+    protected async Task RunInit(Func<Task> init, Action<ViewStatus>? setStatus = null, Func<Exception, string>? translator = null, [CallerMemberName] string? caller = null) {
         try{
             await init();
             setStatus?.Invoke(ViewStatus.Ready.Instance);
         }
         catch (Exception e){
-            var error = LogError(e);
+            var error = LogError(e, caller);
 
-            if (!Quit.IsCancellationRequested)
-                tool.Shell.Notify(new(MessageSeverity.Error, translator?.Invoke(e) ?? error.Message));
+            tool.Shell.Notify(new(MessageSeverity.Error, translator?.Invoke(e) ?? error.Message));
             setStatus?.Invoke(new ViewStatus.Failed(error));
         }
     }
 
-    protected async ValueTask Execute(ValueTask task, Action<bool>? setProcessing = null, Func<Exception, string>? translator = null) {
+    protected async ValueTask Execute(ValueTask task, Action<bool>? setProcessing = null, Func<Exception, string>? translator = null, [CallerMemberName] string? caller = null) {
         setProcessing?.Invoke(true);
         // Save the subscription
         try{
             await task;
         }
         catch (Exception e){
-            var error = LogError(e);
+            var error = LogError(e, caller);
 
-            if (!Quit.IsCancellationRequested)
-                tool.Shell.Notify(new(MessageSeverity.Error, translator?.Invoke(e) ?? error.Message));
+            tool.Shell.Notify(new(MessageSeverity.Error, translator?.Invoke(e) ?? error.Message));
         }
         finally{
             setProcessing?.Invoke(false);
