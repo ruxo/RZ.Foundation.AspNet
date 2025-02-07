@@ -15,4 +15,11 @@ public static class ObservableExtensions
                 shell.Notify(new(MessageSeverity.Error, e.Message));
             }
         });
+
+    public static IObservable<T> ReportFailure<T>(this IObservable<T> source, T @default, ShellViewModel shell, ILogger logger)
+        => source.Catch((Exception e) => {
+            logger.LogError(e, "Operation failed");
+            shell.Notify(new(MessageSeverity.Error, e.Message));
+            return Observable.Return(@default);
+        });
 }
