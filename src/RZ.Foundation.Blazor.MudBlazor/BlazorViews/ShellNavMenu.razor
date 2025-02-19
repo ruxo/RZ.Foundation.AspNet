@@ -1,13 +1,4 @@
-﻿@using System.Reactive.Linq
-@using Microsoft.Extensions.Logging
-@using Microsoft.JSInterop
-@inherits ReactiveComponentBase<ShellNavMenuViewModel>
-
-@implements ITrackBlurRequirements
-
-@inject ILogger<ShellNavMenu> Logger
-@inject NavigationManager NavManager
-@inject RzBlazorJsInterop JS
+﻿@inherits ReactiveComponentBase<ShellNavMenuViewModel>
 
 @if (ViewModel!.IsDrawerVisible){
     <div @ref="drawer" tabindex="0">
@@ -38,60 +29,4 @@
         }
     </MudDrawer>
     </div>
-}
-
-@code {
-
-    DotNetObjectReference<ShellNavMenu> me = null!;
-
-    ElementReference drawer;
-    CompositeDisposable disposables = new();
-
-    bool blurTracking;
-
-    [Parameter] public string? Class { get; set; }
-    [Parameter] public string? Style { get; set; }
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    [Parameter] public RenderFragment? Header { get; set; }
-    [Parameter] public RenderFragment? Footer { get; set; }
-
-    public ShellNavMenu(IServiceProvider sp) {
-        ViewModel = sp.Create<ShellNavMenuViewModel>();
-        this.WhenActivated(d => {
-            me = DotNetObjectReference.Create(this).DisposeWith(d);
-            this.WhenAnyValue(x => x.ViewModel!.IsDrawerVisible)
-                .Where(identity)
-                .Subscribe(_ => blurTracking = false)
-                .DisposeWith(d);
-
-            ViewModel!.DisposeWith(d);
-            disposables.DisposeWith(d);
-        });
-    }
-
-    [JSInvokable]
-    public void OnBlur() {
-        if (ViewModel!.IsDrawerOpen)
-            ViewModel.IsDrawerOpen = false;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender) {
-        if (!firstRender && !blurTracking){
-            blurTracking = true;
-
-            this.WhenAnyValue(x => x.ViewModel!.IsDrawerOpen)
-                .Where(identity)
-                .Subscribe(async void (_) => {
-                     var (e, _) = await Try(drawer.FocusAsync().AsTask());
-                     if (e is not null)
-                         Logger.LogWarning(e, "Cannot focus drawer");
-                 })
-                .DisposeWith(disposables);
-
-            await JS.TrackBlur(drawer, me);
-        }
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
 }

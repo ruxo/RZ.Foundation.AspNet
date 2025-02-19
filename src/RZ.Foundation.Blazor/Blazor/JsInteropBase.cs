@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Diagnostics;
+using JetBrains.Annotations;
 using Microsoft.JSInterop;
 
 namespace RZ.Foundation.Blazor;
@@ -22,7 +23,9 @@ public abstract class JsInteropBase(IJSRuntime js, string modulePath) : IAsyncDi
         if (importModule.IsValueCreated){
             using var import = importModule.Value;
             var module = await import;
-            await module.DisposeAsync();
+            var (error, _) = await Try(module, async m => await m.DisposeAsync());   // It's possible to error here
+            if (error is not null)
+                Trace.WriteLine($"Error disposing {GetType().Name}: {error}");
         }
         GC.SuppressFinalize(this);
     }
