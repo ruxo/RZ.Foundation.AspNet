@@ -22,3 +22,13 @@
     white-space: nowrap;
     overflow: hidden;
 }
+
+.rz-full-screen {
+    min-height: 100svh;
+    display: flex;
+    flex-grow: 1;
+}
+
+.rz-full-screen > *:first-child {
+    flex-grow: 1;
+}
