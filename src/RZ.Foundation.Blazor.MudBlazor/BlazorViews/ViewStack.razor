@@ -1,5 +1,5 @@
 ﻿
-<MudContainer MaxWidth="@(MaxWidth ?? DefaultMaxWidth ?? MudBlazor.MaxWidth.False)" Gutters="false" Class="@EffectiveClass" Style="@Style">
+<MudContainer MaxWidth="@(MaxWidth ?? DefaultMaxWidth ?? MudBlazor.MaxWidth.False)" Gutters="false" Class="@Class" Style="@Style">
     @if (Content is not null){
         <ViewFrom Model="Content"/>
     }
@@ -12,7 +12,5 @@
 
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Style { get; set; }
-
-    string EffectiveClass => $"max-height {Class}";
 
 }
