@@ -1,4 +1,5 @@
 global using RUnit = System.Reactive.Unit;
+using System.Globalization;
 using MudBlazor.Services;
 using RZ.Blazor.Server.Example.Components;
 using RZ.Blazor.Server.Example.Components.Home;
@@ -14,6 +15,7 @@ builder.Services
        .AddScoped<BlankContentViewModel>();
 
 builder.Services
+       .AddLocalization(opts => opts.ResourcesPath = "Resources")
        .AddMudServices()
        .AddRzMudBlazorSettings()
        .AddRazorComponents()
@@ -27,6 +29,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+string[] supportedCultures = [ new("en"), new("th") ];
+var localizationOptions = new RequestLocalizationOptions()
+                         .AddSupportedCultures(supportedCultures)
+                         .AddSupportedUICultures(supportedCultures)
+                         .SetDefaultCulture("en");
+
+app.UseRequestLocalization(localizationOptions);
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();

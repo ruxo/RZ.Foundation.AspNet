@@ -1,6 +1,9 @@
 ﻿@page "/"
 
+@using System.Globalization
 @inherits ReactiveInjectableComponentBase<WelcomeViewModel>
+
+@rendermode InteractiveServer
 
 <PageTitle>Example Home</PageTitle>
 
@@ -9,3 +12,24 @@
 </SectionContent>
 
 <MudText Typo="Typo.h2">Select menu on the left side</MudText>
+
+<MudSimpleTable Style="width: 384px">
+    <thead>
+    <tr>
+        <td>&nbsp;</td><th>Default</th><th>Current</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th>Culture</th><td>@CultureInfo.DefaultThreadCurrentCulture</td><td>@CultureInfo.CurrentCulture</td>
+    </tr>
+    <tr>
+        <th>UI</th><td>@CultureInfo.DefaultThreadCurrentUICulture</td><td>@CultureInfo.CurrentUICulture</td>
+    </tr>
+    </tbody>
+</MudSimpleTable>
+<MudStack Row>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => SetLanguage("th"))">Thai</MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => SetLanguage("en"))">English</MudButton>
+</MudStack>
+<MudText>@localizer["home"]</MudText>
