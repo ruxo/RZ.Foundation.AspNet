@@ -5,6 +5,8 @@
 
 @rendermode InteractiveServer
 
+@{ CultureInfo.CurrentUICulture = new(lang); }
+
 <PageTitle>Example Home</PageTitle>
 
 <SectionContent SectionName="appbar-title">
@@ -13,6 +15,9 @@
 
 <MudText Typo="Typo.h2">Select menu on the left side</MudText>
 
+@{
+    Console.WriteLine($"Thread Id {Thread.CurrentThread.ManagedThreadId} Culture: {CultureInfo.CurrentUICulture}");
+}
 <MudSimpleTable Style="width: 384px">
     <thead>
     <tr>
@@ -25,6 +30,18 @@
     </tr>
     <tr>
         <th>UI</th><td>@CultureInfo.DefaultThreadCurrentUICulture</td><td>@CultureInfo.CurrentUICulture</td>
+    </tr>
+    </tbody>
+</MudSimpleTable>
+<MudSimpleTable Style="Width: 384px;margin-top: 24px">
+    <thead>
+    <tr>
+        <th>TH</th><th>EN</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>@ViewModel!.HomeTh</td><td>@ViewModel!.HomeEn</td>
     </tr>
     </tbody>
 </MudSimpleTable>
