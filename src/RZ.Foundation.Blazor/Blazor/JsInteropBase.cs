@@ -19,6 +19,16 @@ public abstract class JsInteropBase(IJSRuntime js, string modulePath) : IAsyncDi
         return await module.InvokeAsync<T>(identifier, args);
     }
 
+    protected async ValueTask InvokeVoidAsync(string identifier, CancellationToken cancelToken, params object?[]? args) {
+        var module = await importModule.Value;
+        await module.InvokeVoidAsync(identifier, cancelToken, args);
+    }
+
+    protected async ValueTask<T> InvokeAsync<T>(string identifier, CancellationToken cancelToken, params object?[]? args) {
+        var module = await importModule.Value;
+        return await module.InvokeAsync<T>(identifier, cancelToken, args);
+    }
+
     public virtual async ValueTask DisposeAsync() {
         if (importModule.IsValueCreated){
             using var import = importModule.Value;

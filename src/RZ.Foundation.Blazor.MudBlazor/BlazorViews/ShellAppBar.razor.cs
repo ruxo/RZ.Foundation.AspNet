@@ -1,10 +1,25 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using JetBrains.Annotations;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using ReactiveUI;
 using RZ.Foundation.Blazor.Shells;
 
 namespace RZ.Foundation.BlazorViews;
+
+[UsedImplicitly]
+partial class ShellAppBar
+{
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter] public RenderFragment? Title { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+
+    public ShellAppBar(IServiceProvider sp) {
+        ViewModel = sp.Create<ShellAppBarViewModel>();
+    }
+}
 
 public class ShellAppBarViewModel : ViewModel, IActivatableViewModel
 {

@@ -1,5 +1,4 @@
 global using RUnit = System.Reactive.Unit;
-using System.Globalization;
 using MudBlazor.Services;
 using RZ.Blazor.Server.Example.Components;
 using RZ.Blazor.Server.Example.Components.Home;

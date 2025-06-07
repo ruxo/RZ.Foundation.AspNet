@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Localization;
 
