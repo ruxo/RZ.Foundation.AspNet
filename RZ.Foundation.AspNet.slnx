@@ -1,0 +1,18 @@
+﻿<Solution>
+  <Folder Name="/Examples/">
+    <Project Path="Examples\BlazorServer\RZ.Blazor.Server.Example.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="build.ps1" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\RZ.AspNet.Api\RZ.AspNet.Api.csproj" Type="Classic C#" />
+    <Project Path="src\RZ.AspNet.Bootstrapper\RZ.AspNet.Bootstrapper.csproj" Type="Classic C#" />
+    <Project Path="src\RZ.Foundation.Blazor.MudBlazor\RZ.Foundation.Blazor.MudBlazor.csproj" Type="Classic C#" />
+    <Project Path="src\RZ.Foundation.Blazor\RZ.Foundation.Blazor.csproj" Type="Classic C#" />
+    <File Path="src\CommonGlobalUsings.cs" />
+    <File Path="src\Directory.Build.props" />
+  </Folder>
+</Solution>

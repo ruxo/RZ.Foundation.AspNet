@@ -11,6 +11,7 @@ public sealed class ContentViewModel : ViewModel
         shell.NavBarMode = NavBarMode.New(NavBarType.Mini);
 
         OpenModal = ReactiveCommand.Create(() => {
+            // TODO: test onClose!!!!
             shell.PushModal(new PopupViewModel());
         });
 
