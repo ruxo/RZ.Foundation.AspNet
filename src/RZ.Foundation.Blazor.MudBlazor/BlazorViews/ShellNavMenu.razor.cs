@@ -1,7 +1,4 @@
-﻿using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using JetBrains.Annotations;
-using Microsoft.AspNetCore.Components;
+﻿using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
@@ -11,7 +8,7 @@ using RZ.Foundation.Blazor.Shells;
 
 namespace RZ.Foundation.BlazorViews;
 
-[UsedImplicitly]
+[PublicAPI]
 partial class ShellNavMenu : ITrackBlurRequirements
 {
     readonly IServiceProvider sp;
@@ -60,7 +57,7 @@ partial class ShellNavMenu : ITrackBlurRequirements
             this.WhenAnyValue(x => x.ViewModel!.IsDrawerOpen)
                 .Where(identity)
                 .Subscribe(async void (_) => {
-                     var (e, _) = await Try(drawer.FocusAsync().AsTask());
+                     var (e, _) = await Try(drawer.FocusAsync());
                      if (e is not null)
                          Logger.LogWarning(e, "Cannot focus drawer");
                  })

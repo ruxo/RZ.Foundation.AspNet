@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using RZ.Foundation.Blazor.MVVM;
+﻿using RZ.Foundation.Blazor.MVVM;
 
 namespace RZ.Foundation.Blazor.Shells;
 

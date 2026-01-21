@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reactive;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using RZ.Foundation.Blazor.MVVM;
@@ -85,7 +83,7 @@ public static class ObservableExtensions
     }
 
     public static IObservable<Outcome<T>> CatchToOutcome<T>(this IObservable<Outcome<T>> source)
-        => source.Catch((Exception e) => Observable.Return(FailedOutcome<T>(e.ToErrorInfo())));
+        => source.Catch((Exception e) => Observable.Return(FailedOutcome<T>(ErrorFrom.Exception(e))));
 
     public static IObservable<Outcome<T>> CatchToOutcome<T>(this IObservable<T> source, Action<ErrorInfo>? handler = null) {
         var stream = source.Select(SuccessOutcome).CatchToOutcome();
