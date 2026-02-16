@@ -9,10 +9,10 @@
   <ItemGroup>
     <PackageVersion Include="RZ.Foundation" Version="8.2.9" />
     <PackageVersion Include="MinVer" Version="7.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.3" />
     <PackageVersion Include="ReactiveUI.Blazor" Version="22.3.1" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="MudBlazor" Version="8.15.0" />
