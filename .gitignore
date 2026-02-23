@@ -3,3 +3,4 @@ bin/
 .idea/
 *.sln.DotSettings.user
 appsettings.Developement.json
+settings.local.json

@@ -57,7 +57,7 @@ public static class WebApiSettings
         return builder;
     }
 
-    sealed class OnlyErrorsHttpLoggingInterceptor : IHttpLoggingInterceptor
+    public sealed class OnlyErrorsHttpLoggingInterceptor : IHttpLoggingInterceptor
     {
         public ValueTask OnRequestAsync(HttpLoggingInterceptorContext logContext) => default;
 
