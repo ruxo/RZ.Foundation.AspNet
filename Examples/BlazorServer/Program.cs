@@ -1,5 +1,6 @@
 global using RUnit = System.Reactive.Unit;
 using MudBlazor.Services;
+using ReactiveUI.Builder;
 using RZ.Blazor.Server.Example.Components;
 using RZ.Blazor.Server.Example.Components.Home;
 using RZ.Blazor.Server.Example.Components.ShellExample;
@@ -19,6 +20,8 @@ builder.Services
        .AddRzMudBlazorSettings()
        .AddRazorComponents()
        .AddInteractiveServerComponents();
+
+RxAppBuilder.CreateReactiveUIBuilder().WithBlazor().BuildApp();
 
 var app = builder.Build();
 

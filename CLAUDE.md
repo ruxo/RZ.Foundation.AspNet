@@ -103,6 +103,12 @@ builder.Services.AspHostEvents()
 
 Registration:
 ```csharp
+// Required: initialize ReactiveUI Blazor host (ReactiveUI.Blazor >= 23.1.1)
+RxAppBuilder.CreateReactiveUIBuilder()
+            .WithBlazor()
+            .WithViewsFromAssembly(Assembly.GetExecutingAssembly())
+            .BuildApp();
+
 builder.Services.AddRzBlazorSettings();
 ```
 

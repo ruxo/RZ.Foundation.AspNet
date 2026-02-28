@@ -7,15 +7,17 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.3.1" />
+    <PackageVersion Include="ReactiveUI.SourceGenerators" Version="2.6.1" />
     <PackageVersion Include="RZ.Foundation" Version="8.2.9" />
     <PackageVersion Include="MinVer" Version="7.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.3" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.3" />
-    <PackageVersion Include="ReactiveUI.Blazor" Version="22.3.1" />
+    <PackageVersion Include="ReactiveUI.Blazor" Version="23.1.1" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
-    <PackageVersion Include="MudBlazor" Version="8.15.0" />
+    <PackageVersion Include="MudBlazor" Version="9.0.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

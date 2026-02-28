@@ -5,6 +5,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <IsPackable>true</IsPackable>
+      <AssemblyVersion>7.0.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
