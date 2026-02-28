@@ -125,14 +125,14 @@ public static class ObservableExtensions
     /// <summary>
     /// Get the execution handler for a reactive command
     /// </summary>
-    public static Func<Task<T>> OnExecute<T>(this ReactiveCommand<Unit, T> command)
-        => async () => await command.Execute();
+    public static Action OnExecute<T>(this ReactiveCommand<Unit, T> command)
+        => () => command.Execute().Subscribe();
 
-    public static Func<Task<T>> OnExecute<T>(this ReactiveCommand<System.Reactive.Unit, T> command)
-        => async () => await command.Execute();
+    public static Action OnExecute<T>(this ReactiveCommand<System.Reactive.Unit, T> command)
+        => () => command.Execute().Subscribe();
 
-    public static Func<Task<TOut>> OnExecute<TIn,TOut>(this ReactiveCommand<TIn, TOut> command, Func<TIn> value)
-        => async () => await command.Execute(value());
+    public static Action OnExecute<TIn,TOut>(this ReactiveCommand<TIn, TOut> command, Func<TIn> value)
+        => () => command.Execute(value()).Subscribe();
 
     public static IObservable<T> Shared<T>(this IObservable<T> coldObservable)
         => coldObservable.Publish().RefCount();

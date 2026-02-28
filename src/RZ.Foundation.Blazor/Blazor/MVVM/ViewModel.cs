@@ -89,7 +89,7 @@ public abstract class AppViewModel(VmToolkit tool) : ViewModel, IActivatableView
 [PublicAPI]
 public abstract class ActivatableViewModel : ViewModel, IActivatableViewModel
 {
-    public ActivatableViewModel() {
+    protected ActivatableViewModel() {
         this.WhenActivated(OnActivated);
     }
 
