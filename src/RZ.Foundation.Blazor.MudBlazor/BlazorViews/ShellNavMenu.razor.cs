@@ -57,14 +57,15 @@ partial class ShellNavMenu : ITrackBlurRequirements
             this.WhenAnyValue(x => x.ViewModel!.IsDrawerOpen)
                 .Where(identity)
                 .Subscribe(async void (_) => {
-                     var (e, _) = await Try(drawer.FocusAsync());
-                     if (e is not null)
-                         Logger.LogWarning(e, "Cannot focus drawer");
+                     if (drawer.Context is not null && Fail(await TryCatch(drawer.FocusAsync()), out var e))
+                         Logger.LogWarning("Cannot focus drawer: {@Error}", e);
                  })
                 .DisposeWith(disposables);
 
-            await using var js = sp.GetRequiredService<RzBlazorJsInterop>();
-            await js.TrackBlur(drawer, me);
+            if (drawer.Context is not null){
+                await using var js = sp.GetRequiredService<RzBlazorJsInterop>();
+                await js.TrackBlur(drawer, me);
+            }
         }
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -82,9 +83,9 @@ public class ShellNavMenuViewModel : ViewModel, IDisposable
         logger.LogDebug("Creating ShellNavMenuViewModel {Id} with Shell ID {ShellId}", ViewModelId, chrome.ViewModelId);
 
         variant = chrome.WhenAnyValue(x => x.UseMiniDrawer)
-                       .Select(x => x ? DrawerVariant.Mini : DrawerVariant.Temporary)
-                       .ToProperty(this, x => x.Variant)
-                       .DisposeWith(disposables);
+                        .Select(x => x ? DrawerVariant.Mini : DrawerVariant.Temporary)
+                        .ToProperty(this, x => x.Variant)
+                        .DisposeWith(disposables);
 
         ForwardPropertyEvents(chrome, nameof(IsDrawerOpen), nameof(IsDrawerVisible), nameof(ShowOnHover), nameof(IconOnly))
            .DisposeWith(disposables);
@@ -98,8 +99,7 @@ public class ShellNavMenuViewModel : ViewModel, IDisposable
     public bool ShowOnHover => chrome.ShowOnHover;
     public bool IconOnly => chrome.IconOnly;
 
-    public bool IsDrawerOpen
-    {
+    public bool IsDrawerOpen {
         get => chrome.IsDrawerOpen;
         set => chrome.IsDrawerOpen = value;
     }

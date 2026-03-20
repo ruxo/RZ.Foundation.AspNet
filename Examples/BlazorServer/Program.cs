@@ -38,7 +38,8 @@ var localizationOptions = new RequestLocalizationOptions()
                          .SetDefaultCulture("en");
 
 app.UseRequestLocalization(localizationOptions);
-app.UseHttpsRedirection();
+
+if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();

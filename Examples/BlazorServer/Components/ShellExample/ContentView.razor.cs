@@ -16,7 +16,6 @@ public sealed partial class ContentViewModel : ViewModel
 
     [ReactiveCommand]
     void OpenModal() {
-        // TODO: test onClose!!!!
         shell.PushModal(new PopupViewModel());
     }
 

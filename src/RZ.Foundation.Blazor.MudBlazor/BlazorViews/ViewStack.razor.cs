@@ -11,7 +11,7 @@ namespace RZ.Foundation.BlazorViews;
 public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, ShellViewModel shell, IJSRuntime js) : ComponentBase, IDisposable
 {
     bool init;
-    CompositeDisposable disposables = new();
+    readonly CompositeDisposable disposables = new();
 
     [CascadingParameter(Name="DefaultMaxWidth")] public MaxWidth? DefaultMaxWidth { get; set; }
 
@@ -19,7 +19,6 @@ public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, 
     [Parameter, EditorRequired] public required RenderFragment ChildContent { get; set; }
 
     ViewModel? Content => shell.Content;
-    ShellViewModel Shell => shell;
 
     bool needScrollToTop;
 
@@ -33,7 +32,7 @@ public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, 
     }
 
     protected override void OnAfterRender(bool firstRender) {
-        if (firstRender || init) return;
+        if (init) return;
         init = true;    // ensure this is only called once
 
         Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(

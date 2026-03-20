@@ -11,6 +11,6 @@ interface ITrackBlurRequirements
 
 class RzBlazorJsInterop(IJSRuntime js) : JsInteropBase(js, "./_content/RZ.Foundation.Blazor.MudBlazor/BlazorViews/ShellNavMenu.razor.js")
 {
-    public async ValueTask TrackBlur<T>(ElementReference el, DotNetObjectReference<T> netObject) where T: class, ITrackBlurRequirements
-        => await InvokeVoidAsync("trackBlur", el, netObject);
+    public ValueTask TrackBlur<T>(ElementReference el, DotNetObjectReference<T> netObject) where T: class, ITrackBlurRequirements
+        => InvokeVoidAsync("trackBlur", el, netObject);
 }

@@ -8,6 +8,7 @@ public enum AppBarDisplayMode
     Page, Modal, Stacked
 }
 
+[PublicAPI]
 public class AppChromeViewModel : ViewModel
 {
     readonly ObservableAsPropertyHelper<bool> iconOnly;
