@@ -69,7 +69,14 @@ public class ShellViewModel : ViewModel, IEnumerable<ViewState>
     public ReactiveCommand<RUnit, RUnit> ToggleDrawer { get; }
 
     public void CloseCurrentView()
-        => ChangingStack(() => content.Pop());
+        => ChangingStack(() => {
+            if (content.Count > 0)
+                content.Pop();
+            else{
+                logger.LogWarning("Closing shell, no more views to close");
+                notifications.OnNext(new(clock.GetLocalNow(), MessageSeverity.Warning, "No more views to close"));
+            }
+        });
 
     public NotificationMessage Notify(NotificationMessage message) {
         notifications.OnNext(new(clock.GetLocalNow(), message.Severity, message.Message));

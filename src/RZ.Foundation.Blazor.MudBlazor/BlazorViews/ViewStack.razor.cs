@@ -52,8 +52,10 @@ public partial class ViewStack(IScheduler scheduler, AppChromeViewModel chrome, 
                   .DisposeWith(disposables);
 
         chrome.AppBarClicked.Subscribe(_ => {
-            if (shell.StackCount > 0)
+            if (shell.StackCount > 0){
                 shell.CloseCurrentView();
+                StateHasChanged();
+            }
         }).DisposeWith(disposables);
     }
 
